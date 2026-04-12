@@ -1,0 +1,17 @@
+{
+  "id": "ca903e4a-1e07-4101-a006-7ba92d7ac698",
+  "version": "1.0.0",
+  "platform": "all",
+  "arch": "all",
+  "name": "Tag Folders",
+  "logo": "/logo.png",
+  "keywords": [],
+  "devTools": false,
+  "main": {
+    "url": "index.html",
+    "width": 900,
+    "height": 600,
+    "minWidth": 700,
+    "minHeight": 500
+  }
+}
