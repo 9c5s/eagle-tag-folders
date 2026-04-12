@@ -9,5 +9,9 @@ Thumbs.db
 *.staging-*
 *.old-*
 
+# unplugin-auto-import
+auto-imports.d.ts
+components.d.ts
+
 # 設計ドキュメント
 docs/superpowers/
