@@ -4,7 +4,9 @@ import vue from 'eslint-plugin-vue';
 import configPrettier from '@vue/eslint-config-prettier';
 
 export default ts.config(
-  { ignores: ['dist/**', 'node_modules/**', 'public/_locales/**'] },
+  {
+    ignores: ['dist/**', 'node_modules/**', 'public/_locales/**', '*.config.ts', '*.config.js']
+  },
 
   js.configs.recommended,
   ...ts.configs.recommended,
