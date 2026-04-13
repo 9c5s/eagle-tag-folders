@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import RootDirSetting from './RootDirSetting.vue';
-import ExcludeTagsSetting from './ExcludeTagsSetting.vue';
+import CategoryTogglesSetting from './CategoryTogglesSetting.vue';
+import ExcludedFolderTreeSetting from './ExcludedFolderTreeSetting.vue';
+import ExcludedSmartFolderTreeSetting from './ExcludedSmartFolderTreeSetting.vue';
 import NamingModeSetting from './NamingModeSetting.vue';
 import CleanupOldDirsButton from './CleanupOldDirsButton.vue';
 import { useSyncState } from '@/composables/useSyncState';
@@ -12,7 +14,7 @@ const { triggerPreview, triggerSync } = useSync();
 // Eagle プラグインマニフェストからタイトルを取得する
 const title =
   (globalThis as unknown as { eagle?: { plugin?: { manifest?: { name?: string } } } }).eagle?.plugin
-    ?.manifest?.name ?? 'Tag Folders';
+    ?.manifest?.name ?? 'Folder Export';
 </script>
 
 <template>
@@ -26,7 +28,11 @@ const title =
     <div class="settings-content">
       <RootDirSetting />
       <div class="divider" />
-      <ExcludeTagsSetting />
+      <CategoryTogglesSetting />
+      <div class="divider" />
+      <ExcludedFolderTreeSetting />
+      <div class="divider" />
+      <ExcludedSmartFolderTreeSetting />
       <div class="divider" />
       <NamingModeSetting />
       <div class="divider" />
