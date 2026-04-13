@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue';
 import { ElMessageBox } from 'element-plus';
-import type { Settings } from '@/modules/tagFolderSync';
-import { cleanupOldDirs } from '@/modules/tagFolderSync';
+import type { Settings } from '@/modules/folderExportSync';
+import { cleanupOldDirs } from '@/modules/folderExportSync';
 
 const settings = inject<Settings>('settings')!;
 // 削除処理中フラグ

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { interleaveByDir } from '@/modules/tagFolderSync/interleaveByDir';
-import type { SymlinkPlan } from '@/modules/tagFolderSync/types';
+import { interleaveByDir } from '@/modules/folderExportSync/interleaveByDir';
+import type { SymlinkPlan } from '@/modules/folderExportSync/types';
 
 function mk(dir: string, name: string): SymlinkPlan {
   return {

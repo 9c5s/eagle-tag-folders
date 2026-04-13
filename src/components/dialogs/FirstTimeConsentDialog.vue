@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { MANAGED_SUBDIR } from '@/modules/tagFolderSync';
+import { MANAGED_SUBDIR } from '@/modules/folderExportSync';
 const props = defineProps<{ visible: boolean; rootDir: string }>();
 const emit = defineEmits<{
   (e: 'ok'): void;

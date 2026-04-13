@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { buildSyncPlan } from '@/modules/tagFolderSync/planBuilder';
-import { DEFAULT_SETTINGS } from '@/modules/tagFolderSync/types';
-import type { EagleItem, EagleTagGroup } from '@/modules/tagFolderSync/types';
+import { buildSyncPlan } from '@/modules/folderExportSync/planBuilder';
+import { DEFAULT_SETTINGS } from '@/modules/folderExportSync/types';
+import type { EagleItem, EagleTagGroup } from '@/modules/folderExportSync/types';
 
 const item = (id: string, name: string, tags: string[]): EagleItem => ({
   id,

@@ -2,10 +2,10 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { writeToStaging } from '@/modules/tagFolderSync/writer';
-import { DEFAULT_SETTINGS } from '@/modules/tagFolderSync/types';
-import type { SymlinkPlan, ResolvedPaths } from '@/modules/tagFolderSync/types';
-import { MANAGED_SUBDIR } from '@/modules/tagFolderSync/constants';
+import { writeToStaging } from '@/modules/folderExportSync/writer';
+import { DEFAULT_SETTINGS } from '@/modules/folderExportSync/types';
+import type { SymlinkPlan, ResolvedPaths } from '@/modules/folderExportSync/types';
+import { MANAGED_SUBDIR } from '@/modules/folderExportSync/constants';
 
 let tmpRoot: string;
 let sourceFile: string;

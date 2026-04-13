@@ -1,6 +1,6 @@
 import { reactive, watch } from 'vue';
-import { DEFAULT_SETTINGS, type Settings } from '@/modules/tagFolderSync';
-import { settingsKey } from '@/modules/tagFolderSync/constants';
+import { DEFAULT_SETTINGS, type Settings } from '@/modules/folderExportSync';
+import { settingsKey } from '@/modules/folderExportSync/constants';
 
 // 設定キャッシュ (同一セッション内でのロード重複を防ぐ)
 let cache: Settings | null = null;

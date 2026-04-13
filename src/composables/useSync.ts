@@ -1,12 +1,12 @@
 import { inject } from 'vue';
-import type { BuildPlanPhase, ExecutionPhase, Settings } from '@/modules/tagFolderSync';
+import type { BuildPlanPhase, ExecutionPhase, Settings } from '@/modules/folderExportSync';
 import {
   buildPlan,
   execute,
   validatePrerequisites,
   needsConsent,
   appendPerfLog
-} from '@/modules/tagFolderSync';
+} from '@/modules/folderExportSync';
 import { useSyncState } from './useSyncState';
 
 export function useSync() {

@@ -2,7 +2,7 @@
 import { inject, ref } from 'vue';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import type { Settings } from '@/modules/tagFolderSync';
+import type { Settings } from '@/modules/folderExportSync';
 import SettingsSection from './SettingsSection.vue';
 
 const settings = inject<Settings>('settings')!;

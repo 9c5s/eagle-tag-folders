@@ -3,8 +3,8 @@ import ElementPlus from 'element-plus';
 import App from './views/App.vue';
 import { installI18n } from './plugins/i18n';
 import { loadSettings, persistSettings } from './composables/useSettings';
-import { cleanupLeftovers } from './modules/tagFolderSync';
-import type { Settings } from './modules/tagFolderSync';
+import { cleanupLeftovers } from './modules/folderExportSync';
+import type { Settings } from './modules/folderExportSync';
 import { useSyncState } from './composables/useSyncState';
 import './assets/styles/main.scss';
 

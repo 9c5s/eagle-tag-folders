@@ -4,9 +4,9 @@ import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { mockEagle } from '../helpers/mockEagle';
-import { buildPlan, execute, validatePrerequisites } from '@/modules/tagFolderSync/orchestrator';
-import { DEFAULT_SETTINGS } from '@/modules/tagFolderSync/types';
-import { MANAGED_SUBDIR } from '@/modules/tagFolderSync/constants';
+import { buildPlan, execute, validatePrerequisites } from '@/modules/folderExportSync/orchestrator';
+import { DEFAULT_SETTINGS } from '@/modules/folderExportSync/types';
+import { MANAGED_SUBDIR } from '@/modules/folderExportSync/constants';
 
 let tmpRoot: string;
 let libraryDir: string;

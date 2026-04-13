@@ -2,7 +2,11 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { appendPerfLog, formatPerfRecord, type PerfRecord } from '@/modules/tagFolderSync/perfLog';
+import {
+  appendPerfLog,
+  formatPerfRecord,
+  type PerfRecord
+} from '@/modules/folderExportSync/perfLog';
 
 let tmpDir: string;
 

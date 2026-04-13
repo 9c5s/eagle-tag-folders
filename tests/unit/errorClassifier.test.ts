@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { classify } from '@/modules/tagFolderSync/errorClassifier';
+import { classify } from '@/modules/folderExportSync/errorClassifier';
 
 function err(code: string): NodeJS.ErrnoException {
   const e: NodeJS.ErrnoException = new Error(code);

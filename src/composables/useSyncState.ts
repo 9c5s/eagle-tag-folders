@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import type { PlanSummary, SymlinkPlan, SyncResult } from '@/modules/tagFolderSync';
+import type { PlanSummary, SymlinkPlan, SyncResult } from '@/modules/folderExportSync';
 
 type SyncState = 'Idle' | 'Planning' | 'Preview' | 'Syncing' | 'Completed' | 'Error' | 'RolledBack';
 

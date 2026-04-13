@@ -7,7 +7,7 @@ import DevModeWarningDialog from '@/components/dialogs/DevModeWarningDialog.vue'
 import ExitConfirmDialog from '@/components/dialogs/ExitConfirmDialog.vue';
 import { useSync } from '@/composables/useSync';
 import { inject, computed } from 'vue';
-import type { Settings } from '@/modules/tagFolderSync';
+import type { Settings } from '@/modules/folderExportSync';
 
 const sync = useSync();
 const settings = inject<Settings>('settings')!;

@@ -4,7 +4,7 @@ import {
   sanitizeFileName,
   computePathBudget,
   fitsWithinBudget
-} from '@/modules/tagFolderSync/sanitize';
+} from '@/modules/folderExportSync/sanitize';
 
 describe('sanitizeDirName', () => {
   it('通常文字列はそのまま', () => {

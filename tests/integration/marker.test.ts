@@ -7,7 +7,7 @@ import {
   isManaged,
   assertNotReparsePoint,
   MARKER_FILE
-} from '@/modules/tagFolderSync/marker';
+} from '@/modules/folderExportSync/marker';
 
 let tmpDir: string;
 

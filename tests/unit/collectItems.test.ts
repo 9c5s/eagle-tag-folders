@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { vi } from 'vitest';
 import { mockEagle } from '../helpers/mockEagle';
-import { collectItems } from '@/modules/tagFolderSync/collectItems';
+import { collectItems } from '@/modules/folderExportSync/collectItems';
 
 beforeEach(() => {
   mockEagle({

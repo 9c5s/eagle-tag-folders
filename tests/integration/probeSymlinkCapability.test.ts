@@ -2,9 +2,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { probeSymlinkCapability, type FsOps } from '@/modules/tagFolderSync/probeSymlinkCapability';
-import type { ResolvedPaths } from '@/modules/tagFolderSync/types';
-import { MANAGED_SUBDIR } from '@/modules/tagFolderSync/constants';
+import {
+  probeSymlinkCapability,
+  type FsOps
+} from '@/modules/folderExportSync/probeSymlinkCapability';
+import type { ResolvedPaths } from '@/modules/folderExportSync/types';
+import { MANAGED_SUBDIR } from '@/modules/folderExportSync/constants';
 
 let tmpRoot: string;
 let existingFile: string;

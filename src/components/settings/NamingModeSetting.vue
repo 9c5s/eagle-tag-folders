@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject } from 'vue';
-import type { Settings } from '@/modules/tagFolderSync';
+import type { Settings } from '@/modules/folderExportSync';
 import SettingsSection from './SettingsSection.vue';
 
 const settings = inject<Settings>('settings')!;

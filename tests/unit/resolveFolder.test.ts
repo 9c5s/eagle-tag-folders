@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { resolveDirectories, resolveAllPaths } from '@/modules/tagFolderSync/resolveFolder';
-import type { EagleItem, EagleTagGroup } from '@/modules/tagFolderSync/types';
+import { resolveDirectories, resolveAllPaths } from '@/modules/folderExportSync/resolveFolder';
+import type { EagleItem, EagleTagGroup } from '@/modules/folderExportSync/types';
 
 describe('resolveDirectories', () => {
   it('未所属タグは [tag]', () => {

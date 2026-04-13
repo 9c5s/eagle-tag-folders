@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { cleanupLeftovers, cleanupOldDirs } from '@/modules/tagFolderSync/cleanupLeftovers';
-import { MANAGED_SUBDIR } from '@/modules/tagFolderSync/constants';
+import { cleanupLeftovers, cleanupOldDirs } from '@/modules/folderExportSync/cleanupLeftovers';
+import { MANAGED_SUBDIR } from '@/modules/folderExportSync/constants';
 
 let tmpRoot: string;
 
