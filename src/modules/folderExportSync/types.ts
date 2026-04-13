@@ -3,7 +3,6 @@ export type CategoryKey = 'folders' | 'smartFolders' | 'all' | 'untagged' | 'unc
 
 export type Settings = {
   rootDir: string | null;
-  excludeTags: string[];
   namingMode: 'suffix' | 'id';
   sanitizeReplacement: string;
   categories: Record<CategoryKey, boolean>;
@@ -13,7 +12,6 @@ export type Settings = {
 
 export const DEFAULT_SETTINGS: Settings = {
   rootDir: null,
-  excludeTags: [],
   namingMode: 'suffix',
   sanitizeReplacement: '_',
   categories: {
@@ -46,11 +44,6 @@ export type EagleItem = {
   folders: string[];
 };
 
-export type EagleTagGroup = {
-  name: string;
-  tags: string[];
-};
-
 // ---- プラン中間表現 ----
 export type SymlinkPlan = {
   itemId: string;
@@ -63,13 +56,10 @@ export type SymlinkPlan = {
 // ---- サマリ ----
 export type PlanSummary = {
   itemCount: number;
-  excludedItemCount: number; // 旧 (Phase J で削除)
-  groupCount: number; // 旧
-  tagCount: number; // 旧
-  folderCount: number; // 新規
-  smartFolderCount: number; // 新規
-  excludedFolderCount: number; // 新規
-  excludedSmartFolderCount: number; // 新規
+  folderCount: number;
+  smartFolderCount: number;
+  excludedFolderCount: number;
+  excludedSmartFolderCount: number;
   symlinkCount: number;
   collisionCount: number;
   sanitizedNames: Array<{ original: string; sanitized: string }>;

@@ -72,9 +72,6 @@ export function buildSyncPlan(
 
   const summary: PlanSummary = {
     itemCount: uniqueItemIds.size,
-    excludedItemCount: 0,
-    groupCount: 0,
-    tagCount: 0,
     folderCount: folderDirSet.size,
     smartFolderCount: smartFolderDirSet.size,
     excludedFolderCount: excludedFolderSet.size,

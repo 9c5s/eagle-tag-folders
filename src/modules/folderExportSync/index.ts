@@ -15,7 +15,6 @@ export type {
   CategoryKey,
   ResolvedPaths,
   EagleItem,
-  EagleTagGroup,
   SymlinkPlan,
   PlanSummary,
   SyncResult,
