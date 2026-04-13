@@ -18,7 +18,8 @@ export function useEagleTheme() {
     };
     eagleTheme.value = map[theme] ?? 'light';
     document.documentElement.setAttribute('theme', eagleTheme.value);
-    document.documentElement.setAttribute('platform', process.platform);
+    const proc = (globalThis as { process?: { platform?: string } }).process;
+    document.documentElement.setAttribute('platform', proc?.platform ?? 'web');
   };
 
   onMounted(() => {

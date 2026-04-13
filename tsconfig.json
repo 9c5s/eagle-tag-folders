@@ -17,7 +17,7 @@
       "@/*": ["./src/*"],
       "@styles/*": ["./src/assets/styles/*"]
     },
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vitest/globals", "vite/client"],
     "resolveJsonModule": true
   },
   "include": ["src/**/*", "tests/**/*", "src/types/**/*.d.ts"],

@@ -8,6 +8,12 @@ import type { Settings } from './modules/tagFolderSync';
 import { useSyncState } from './composables/useSyncState';
 import './assets/styles/main.scss';
 
+// Vite dev でブラウザ単体起動する際のフォールバック。production では tree-shake される
+if (import.meta.env.DEV && typeof (globalThis as { eagle?: unknown }).eagle === 'undefined') {
+  const { installEagleMock } = await import('./dev/eagleMock');
+  installEagleMock();
+}
+
 let bootedSettings: Settings | null = null;
 
 async function bootstrap() {
