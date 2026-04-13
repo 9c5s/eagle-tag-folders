@@ -5,9 +5,15 @@ const { summary } = useSyncState();
 
 <template>
   <div v-if="summary" class="plan-summary">
-    <div>対象アイテム: {{ summary.itemCount }} 件 (除外 {{ summary.excludedItemCount }} 件)</div>
-    <div>タググループ数: {{ summary.groupCount }}</div>
-    <div>タグ数: {{ summary.tagCount }}</div>
+    <div>対象アイテム: {{ summary.itemCount }} 件</div>
+    <div>フォルダ数: {{ summary.folderCount }}</div>
+    <div>スマートフォルダ数: {{ summary.smartFolderCount }}</div>
+    <div v-if="summary.excludedFolderCount > 0">
+      除外フォルダ: {{ summary.excludedFolderCount }} 件
+    </div>
+    <div v-if="summary.excludedSmartFolderCount > 0">
+      除外スマートフォルダ: {{ summary.excludedSmartFolderCount }} 件
+    </div>
     <div>作成予定 symlink: {{ summary.symlinkCount }}</div>
     <div v-if="summary.collisionCount > 0">衝突: {{ summary.collisionCount }}</div>
     <div v-if="summary.sanitizedNames.length > 0">
