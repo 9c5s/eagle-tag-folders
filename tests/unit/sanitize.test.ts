@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeDirName } from '@/modules/tagFolderSync/sanitize';
+import { sanitizeDirName, sanitizeFileName } from '@/modules/tagFolderSync/sanitize';
 
 describe('sanitizeDirName', () => {
   it('通常文字列はそのまま', () => {
@@ -44,5 +44,23 @@ describe('sanitizeDirName', () => {
   it('切り詰め後も空文字にならない', () => {
     const result = sanitizeDirName('あ'.repeat(1000), '_');
     expect(result.length).toBeGreaterThan(0);
+  });
+});
+
+describe('sanitizeFileName', () => {
+  it('拡張子付き通常ファイル名', () => {
+    expect(sanitizeFileName('photo.png', '_')).toBe('photo.png');
+  });
+  it('禁止文字付きファイル名', () => {
+    expect(sanitizeFileName('a:b.png', '_')).toBe('a_b.png');
+  });
+  it('ファイル名部分が予約名なら拡張子込みでエスケープ', () => {
+    expect(sanitizeFileName('CON.txt', '_')).toBe('_CON.txt');
+  });
+  it('ドットのみのファイル名は _', () => {
+    expect(sanitizeFileName('.', '_')).toBe('_');
+  });
+  it('拡張子なしファイルは DirName と同じ扱い', () => {
+    expect(sanitizeFileName('abc', '_')).toBe('abc');
   });
 });

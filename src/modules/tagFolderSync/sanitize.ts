@@ -20,3 +20,16 @@ function sanitizeCore(raw: string, replacement: string): string {
 export function sanitizeDirName(raw: string, replacement: string): string {
   return sanitizeCore(raw, replacement);
 }
+
+export function sanitizeFileName(raw: string, replacement: string): string {
+  if (raw === '.' || raw === '..') return '_';
+  const dot = raw.lastIndexOf('.');
+  if (dot <= 0 || dot === raw.length - 1) {
+    return sanitizeCore(raw, replacement);
+  }
+  const base = raw.slice(0, dot);
+  const ext = raw.slice(dot);
+  const sanitizedBase = sanitizeCore(base, replacement);
+  const sanitizedExt = ext.replace(FORBIDDEN_CHARS, replacement);
+  return sanitizedBase + sanitizedExt;
+}
