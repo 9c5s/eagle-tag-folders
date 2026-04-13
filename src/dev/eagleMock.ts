@@ -33,6 +33,19 @@ export function installEagleMock(): void {
         tags: opts.tags ?? []
       })
     },
+    dialog: {
+      // dev 環境では Eagle ネイティブダイアログを呼べないため prompt で代替する
+      showOpenDialog: async (opts: {
+        defaultPath?: string;
+      }): Promise<{ canceled: boolean; filePaths: string[] }> => {
+        const win = globalThis as Window & typeof globalThis;
+        const answer = win.prompt('[dev mock] フォルダの絶対パスを入力', opts.defaultPath ?? '');
+        if (answer === null || answer.length === 0) {
+          return { canceled: true, filePaths: [] };
+        }
+        return { canceled: false, filePaths: [answer] };
+      }
+    },
     onPluginCreate: (cb: (plugin: unknown) => void): void => {
       queueMicrotask(() => cb({ manifest: mock.plugin.manifest, path: mock.plugin.path }));
     },

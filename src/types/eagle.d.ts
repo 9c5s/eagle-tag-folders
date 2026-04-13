@@ -7,8 +7,9 @@
  *  - Item: select(), open(), replaceFile(), refreshThumbnail(), setCustomThumbnail()
  *  - TagGroup: save(), remove(), addTags(), removeTags(), id
  *  - Folder 関連 (今回の機能では未使用)
- *  - screen, notification, contextMenu, dialog, clipboard, drag, shell, log
+ *  - screen, notification, contextMenu, clipboard, drag, shell, log
  *  - Tag 関連 (tag.get, tag.merge 等)
+ *  - dialog.showSaveDialog / showMessageBox / showErrorBox (今回の機能では未使用)
  */
 declare namespace Eagle {
   interface Item {
@@ -53,6 +54,27 @@ declare namespace Eagle {
     fields?: Array<keyof Item>;
   }
 
+  interface ShowOpenDialogOptions {
+    title?: string;
+    defaultPath?: string;
+    buttonLabel?: string;
+    filters?: Array<{ name: string; extensions: string[] }>;
+    properties?: Array<
+      | 'openFile'
+      | 'openDirectory'
+      | 'multiSelections'
+      | 'showHiddenFiles'
+      | 'createDirectory'
+      | 'promptToCreate'
+    >;
+    message?: string;
+  }
+
+  interface ShowOpenDialogResult {
+    canceled: boolean;
+    filePaths: string[];
+  }
+
   interface EagleAPI {
     item: {
       getAll(): Promise<Item[]>;
@@ -60,6 +82,9 @@ declare namespace Eagle {
       get(opts?: ItemGetOptions): Promise<Item[]>;
       getById(id: string): Promise<Item | null>;
       getByIds(ids: string[]): Promise<Item[]>;
+    };
+    dialog: {
+      showOpenDialog(options: ShowOpenDialogOptions): Promise<ShowOpenDialogResult>;
     };
     tagGroup: {
       get(): Promise<TagGroup[]>;

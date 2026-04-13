@@ -26,30 +26,22 @@ async function validateAndSet(candidate: string): Promise<void> {
   }
 }
 
-// ファイルピッカーからフォルダを選択する
-async function onFolderPick(event: Event): Promise<void> {
-  const target = event.target as HTMLInputElement;
-  const files = target.files;
-  if (files === null || files.length === 0) {
-    errorMessage.value =
-      '選択したディレクトリが空です。既存ファイルを含むディレクトリを選ぶか、下の「パス入力」から絶対パスを指定してください';
-    return;
+// Eagle のネイティブダイアログでフォルダを選択する
+async function openFolderPicker(): Promise<void> {
+  errorMessage.value = '';
+  try {
+    const result = await eagle.dialog.showOpenDialog({
+      title: 'ルートディレクトリを選択',
+      defaultPath: settings.rootDir ?? undefined,
+      properties: ['openDirectory', 'createDirectory']
+    });
+    if (result.canceled) return;
+    const picked = result.filePaths[0];
+    if (picked === undefined || picked.length === 0) return;
+    await validateAndSet(picked);
+  } catch (err) {
+    errorMessage.value = `フォルダ選択に失敗しました: ${(err as Error).message}`;
   }
-  const firstFile = files[0] as File & { path?: string };
-  if (firstFile.path !== undefined) {
-    await validateAndSet(path.dirname(firstFile.path));
-    return;
-  }
-  errorMessage.value =
-    'ディレクトリのパスを取得できませんでした。「パス入力」で絶対パスを指定してください';
-}
-
-// フォルダピッカーをクリックで開く
-function openFolderPicker(): void {
-  const picker = (globalThis as Window & typeof globalThis).document.getElementById(
-    'root-dir-picker'
-  );
-  picker?.click();
 }
 
 // テキスト入力でパスを手動入力する
@@ -85,20 +77,11 @@ async function manualInput(): Promise<void> {
       </div>
     </el-tooltip>
     <div class="root-dir-actions">
-      <input
-        id="root-dir-picker"
-        type="file"
-        webkitdirectory
-        style="display: none"
-        @change="onFolderPick"
-      />
       <el-button size="small" @click="openFolderPicker">フォルダ選択...</el-button>
       <el-button size="small" @click="manualInput">パス入力...</el-button>
     </div>
     <div v-if="errorMessage" class="root-dir-error">{{ errorMessage }}</div>
-    <p class="root-dir-hint">
-      空ディレクトリを指定したい場合は「パス入力」で絶対パスを指定してください
-    </p>
+    <p class="root-dir-hint">キーボードで直接入力する場合は「パス入力」を使用してください</p>
   </SettingsSection>
 </template>
 
