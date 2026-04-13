@@ -1,9 +1,10 @@
 import { createApp, reactive, toRaw } from 'vue';
 import ElementPlus from 'element-plus';
 import App from './views/App.vue';
+import UnsupportedScreen from './views/UnsupportedScreen.vue';
 import { installI18n } from './plugins/i18n';
 import { loadSettings, persistSettings } from './composables/useSettings';
-import { cleanupLeftovers } from './modules/folderExportSync';
+import { cleanupLeftovers, isSupportedEagleBuild } from './modules/folderExportSync';
 import type { Settings } from './modules/folderExportSync';
 import { useSyncState } from './composables/useSyncState';
 import './assets/styles/main.scss';
@@ -16,7 +17,16 @@ if (import.meta.env.DEV && typeof (globalThis as { eagle?: unknown }).eagle === 
 
 let bootedSettings: Settings | null = null;
 
-async function bootstrap() {
+function mountUnsupported(): void {
+  const app = createApp(UnsupportedScreen);
+  app.mount('#app');
+}
+
+async function bootstrap(): Promise<void> {
+  if (!isSupportedEagleBuild(eagle.app.build ?? 0)) {
+    mountUnsupported();
+    return;
+  }
   const settings = reactive(loadSettings()) as Settings;
   await cleanupLeftovers(settings.rootDir);
   const app = createApp(App);

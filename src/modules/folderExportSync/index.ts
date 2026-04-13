@@ -9,6 +9,7 @@ export { cleanupLeftovers, cleanupOldDirs } from './cleanupLeftovers';
 export { appendPerfLog, formatPerfRecord } from './perfLog';
 export type { PerfRecord } from './perfLog';
 export { MANAGED_SUBDIR, MARKER_FILE } from './constants';
+export { isSupportedEagleBuild, MIN_EAGLE_BUILD } from './versionGuard';
 export type {
   Settings,
   CategoryKey,
