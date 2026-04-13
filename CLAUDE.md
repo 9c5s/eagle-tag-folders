@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-Eagle (画像・素材管理アプリ) のプラグイン。ライブラリ内アイテムのタグとタググループを元に、OS のファイルシステム上へディレクトリ階層を構築し、実ファイルへのシンボリックリンクを配置する。MVP は**手動フル同期のみ** (差分同期は将来拡張)。
+Eagle (画像・素材管理アプリ) のプラグイン。ライブラリ内アイテムが属する通常フォルダ / スマートフォルダ / 仮想カテゴリ (all / untagged / uncategorized) を元に、OS のファイルシステム上へディレクトリ階層を構築し、実ファイルへのシンボリックリンクを配置する。MVP は**手動フル同期のみ** (差分同期は将来拡張)。
 
 - Eagle ランタイム: **Chromium 107 + Node.js 16**
 - 開発マシン: Node.js 18+ 推奨 (ビルドは新しい Node でよい)
@@ -32,7 +32,7 @@ npx vitest run -t "Windows 予約名"                 # test名で絞り込み
 
 ### レイヤ境界 (厳守)
 
-1. **`src/modules/tagFolderSync/`** - ビジネスロジック、**Vue に依存しない純粋 TS**
+1. **`src/modules/folderExportSync/`** - ビジネスロジック、**Vue に依存しない純粋 TS**
    - Node.js API (`fs`, `path`, `os`) と Eagle API (`eagle.*`) のみ使用可
    - Vue の `ref`/`reactive` をここで使わない
    - Unit/Integration テストはこのディレクトリに対してのみ書く
@@ -45,11 +45,11 @@ npx vitest run -t "Windows 予約名"                 # test名で絞り込み
 
 - ユーザー指定の `rootDir` は**既存ディレクトリ必須**、直接は触らない
 - プラグインが書き込むのは `<rootDir>/<MANAGED_SUBDIR>` 配下の 4 種のみ:
-  - `managedDir` = `<rootDir>/eagle-tag-folders/` (本体)
-  - `stagingDir` = `<rootDir>/eagle-tag-folders.staging-<ts>/` (書込中)
-  - `oldDir` = `<rootDir>/eagle-tag-folders.old-<ts>/` (swap 退避、**自動削除しない**)
-  - `probeDir` = `<rootDir>/eagle-tag-folders.probe-<ts>/` (symlink 可否検査)
-- `MANAGED_SUBDIR` は定数 (`src/modules/tagFolderSync/constants.ts`)、**UI から変更不可**
+  - `managedDir` = `<rootDir>/eagle-folder-export/` (本体)
+  - `stagingDir` = `<rootDir>/eagle-folder-export.staging-<ts>/` (書込中)
+  - `oldDir` = `<rootDir>/eagle-folder-export.old-<ts>/` (swap 退避、**自動削除しない**)
+  - `probeDir` = `<rootDir>/eagle-folder-export.probe-<ts>/` (symlink 可否検査)
+- `MANAGED_SUBDIR` は定数 (`src/modules/folderExportSync/constants.ts`)、**UI から変更不可**
 - Eagle ライブラリ (`eagle.library.path`) に**書き込んではいけない** (probe も既存ファイルへのリンクのみ)
 - `rootDir` が reparse point / symlink / junction / home 直下 / システムクリティカルパスの場合は fatal 拒否
 
@@ -57,7 +57,7 @@ npx vitest run -t "Windows 予約名"                 # test名で絞り込み
 
 ```
 buildPlan(settings, BuildPlanCallbacks)
-   └─> collect (eagle.item.get + tagGroup.get) → plan (sanitize + budget + 衝突解決)
+   └─> collect (eagle.folder.getAll + eagle.smartFolder.getAll + eagle.item.get + sf.getItems) → plan (sanitize + budget + 衝突解決)
    return { summary, plans }   ※ fs 書き込みゼロ
 
 execute(plans, settings, ExecutionCallbacks)
@@ -71,7 +71,7 @@ execute(plans, settings, ExecutionCallbacks)
 
 ## テスト方針
 
-- **Unit テスト** (`tests/unit/`): 純粋関数 (sanitize, resolveFolder, planBuilder, errorClassifier, interleaveByDir, collectItems)
+- **Unit テスト** (`tests/unit/`): 純粋関数 (sanitize, resolveHierarchy, expandDescendants, categoryNames, planBuilder, errorClassifier, interleaveByDir, collectItems, versionGuard)
 - **Integration テスト** (`tests/integration/`): fs 実操作 (marker, probe, writer, swap, cleanupLeftovers, orchestrator)
   - tmp ディレクトリを `mkdtemp` で作成、`afterEach` で `fs.rm` 削除
   - **Windows 開発者モード無効時は `EPERM` を catch して `return` でスキップ** (必須パターン)
