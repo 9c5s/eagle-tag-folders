@@ -1,0 +1,25 @@
+export {
+  buildPlan,
+  execute,
+  resolvePaths,
+  validatePrerequisites,
+  needsConsent
+} from './orchestrator';
+export { cleanupLeftovers, cleanupOldDirs } from './cleanupLeftovers';
+export { MANAGED_SUBDIR, MARKER_FILE } from './constants';
+export type {
+  Settings,
+  ResolvedPaths,
+  EagleItem,
+  EagleTagGroup,
+  SymlinkPlan,
+  PlanSummary,
+  SyncResult,
+  SyncError,
+  SyncErrorPhase,
+  BuildPlanCallbacks,
+  ExecutionCallbacks,
+  BuildPlanPhase,
+  ExecutionPhase
+} from './types';
+export { DEFAULT_SETTINGS } from './types';
