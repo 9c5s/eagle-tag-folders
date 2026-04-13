@@ -19,10 +19,6 @@ export function mockEagle(overrides?: Partial<Eagle.EagleAPI>) {
     smartFolder: {
       getAll: vi.fn().mockResolvedValue([])
     },
-    tagGroup: {
-      get: vi.fn().mockResolvedValue([]),
-      create: vi.fn()
-    },
     library: { path: '/mock/library', name: 'mock', info: vi.fn() },
     app: {
       theme: 'LIGHT',

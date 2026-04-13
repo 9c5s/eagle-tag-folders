@@ -5,9 +5,8 @@
  *
  * 意図的に省いたメンバー:
  *  - Item: select(), open(), replaceFile(), refreshThumbnail(), setCustomThumbnail()
- *  - TagGroup: save(), remove(), addTags(), removeTags(), id
  *  - screen, notification, contextMenu, clipboard, drag, shell, log
- *  - Tag 関連 (tag.get, tag.merge 等)
+ *  - tag / tag group 関連 API 一式 (tag.get, tag.merge 等)
  *  - dialog.showSaveDialog / showMessageBox / showErrorBox (今回の機能では未使用)
  */
 declare namespace Eagle {
@@ -26,13 +25,6 @@ declare namespace Eagle {
     importedAt: number;
     save(): Promise<void>;
     moveToTrash(): Promise<void>;
-  }
-
-  interface TagGroup {
-    name: string;
-    tags: string[];
-    color?: string;
-    description?: string;
   }
 
   interface Folder {
@@ -102,10 +94,6 @@ declare namespace Eagle {
     };
     dialog: {
       showOpenDialog(options: ShowOpenDialogOptions): Promise<ShowOpenDialogResult>;
-    };
-    tagGroup: {
-      get(): Promise<TagGroup[]>;
-      create(opts: { name: string; tags?: string[] }): Promise<TagGroup>;
     };
     folder: {
       getAll(): Promise<Folder[]>;

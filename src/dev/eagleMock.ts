@@ -26,13 +26,6 @@ export function installEagleMock(): void {
       getById: async (): Promise<unknown> => null,
       getByIds: async (): Promise<unknown[]> => []
     },
-    tagGroup: {
-      get: async (): Promise<unknown[]> => [],
-      create: async (opts: { name: string; tags?: string[] }): Promise<unknown> => ({
-        name: opts.name,
-        tags: opts.tags ?? []
-      })
-    },
     dialog: {
       // dev 環境では Eagle ネイティブダイアログを呼べないため prompt で代替する
       showOpenDialog: async (opts: {
