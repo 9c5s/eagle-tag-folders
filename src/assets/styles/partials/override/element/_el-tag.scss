@@ -1,0 +1,31 @@
+@use '@styles/modules/mixins' as mixins;
+
+.el-tag {
+  --el-tag-bg-color: var(--color-bg-active);
+  --el-tag-border-color: transparent;
+  --el-tag-text-color: var(--color-text-primary);
+  --el-tag-hover-color: var(--color-primary);
+
+  height: 22px;
+  line-height: 20px;
+  padding: 0 8px;
+  font-size: 12px;
+  border-radius: 4px;
+  background: var(--color-bg-active) !important;
+  color: var(--color-text-primary) !important;
+  border: 1px solid transparent !important;
+
+  .el-tag__close {
+    width: 14px;
+    height: 14px;
+    font-size: 12px;
+    margin-left: 6px;
+    color: var(--color-text-secondary);
+    background: transparent;
+
+    &:hover {
+      background: var(--color-bg-hover);
+      color: var(--color-text-primary);
+    }
+  }
+}

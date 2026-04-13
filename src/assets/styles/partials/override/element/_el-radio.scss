@@ -1,0 +1,59 @@
+@use '@styles/modules/mixins' as mixins;
+
+.el-radio {
+  --el-color-primary: var(--color-primary);
+  --el-radio-text-color: var(--color-text-primary);
+  --el-radio-font-size: 13px;
+  --el-radio-input-border-color: var(--color-border-primary);
+
+  height: auto;
+  margin-right: 16px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+
+  .el-radio__input {
+    .el-radio__inner {
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--color-border-primary);
+      background: transparent;
+
+      &:hover {
+        border-color: var(--color-primary);
+      }
+    }
+
+    &.is-checked {
+      .el-radio__inner {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+
+        &::after {
+          width: 6px;
+          height: 6px;
+          background-color: var(--color-white);
+        }
+      }
+
+      + .el-radio__label {
+        color: var(--color-text-primary);
+      }
+    }
+  }
+
+  .el-radio__label {
+    font-size: 13px;
+    color: var(--color-text-primary);
+    padding-left: 6px;
+  }
+
+  &.is-disabled {
+    opacity: 0.5;
+  }
+}
+
+.el-radio-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
