@@ -9,9 +9,9 @@
   "devTools": false,
   "main": {
     "url": "index.html",
-    "width": 900,
-    "height": 600,
-    "minWidth": 700,
-    "minHeight": 500
+    "width": 960,
+    "height": 820,
+    "minWidth": 720,
+    "minHeight": 700
   }
 }
