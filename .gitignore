@@ -15,3 +15,10 @@ components.d.ts
 
 # 設計ドキュメント
 docs/superpowers/
+
+# 開発者ローカル環境変数 (perf ログ有効化など)
+.env.local
+.env.*.local
+
+# 開発者ローカル実測ログ
+.tmp/

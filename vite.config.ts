@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
@@ -35,36 +35,46 @@ function electronNodeBuiltins(): Plugin {
   };
 }
 
-export default defineConfig({
-  base: './',
-  build: {
-    sourcemap: false,
-    minify: false,
-    rollupOptions: {
-      output: {
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: 'assets/[ext]/[name]-[hash][extname]'
+// 並列度実測用の perf ログ書き込み先。開発者ローカルの .env.local で
+// VITE_PERF_LOG_DIR に絶対パスを設定した場合のみ有効化する。
+// 未設定 (空文字) の場合は計測ログを書き出さない (本番配布時の既定挙動)。
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const perfLogDir = env.VITE_PERF_LOG_DIR ?? '';
+  return {
+    base: './',
+    define: {
+      __PERF_LOG_DIR__: JSON.stringify(perfLogDir)
+    },
+    build: {
+      sourcemap: false,
+      minify: false,
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash][extname]'
+        }
+      }
+    },
+    plugins: [
+      electronNodeBuiltins(),
+      vue(),
+      tailwindcss(),
+      AutoImport({
+        imports: ['vue'],
+        resolvers: [ElementPlusResolver()]
+      }),
+      Components({
+        dirs: ['src/components/**', 'src/views/**'],
+        resolvers: [ElementPlusResolver()]
+      })
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@styles': fileURLToPath(new URL('./src/assets/styles', import.meta.url))
       }
     }
-  },
-  plugins: [
-    electronNodeBuiltins(),
-    vue(),
-    tailwindcss(),
-    AutoImport({
-      imports: ['vue'],
-      resolvers: [ElementPlusResolver()]
-    }),
-    Components({
-      dirs: ['src/components/**', 'src/views/**'],
-      resolvers: [ElementPlusResolver()]
-    })
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@styles': fileURLToPath(new URL('./src/assets/styles', import.meta.url))
-    }
-  }
+  };
 });

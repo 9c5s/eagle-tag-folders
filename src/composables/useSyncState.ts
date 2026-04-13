@@ -16,6 +16,13 @@ const progress = ref<{ current: number; total: number; currentTag: string }>({
 });
 const errorMessage = ref<string | null>(null);
 const activeDialog = ref<DialogKind>(null);
+// triggerPreview と runExecute の間で buildPlan の計測値を受け渡すための一時保管領域
+const buildPlanTiming = ref<{
+  collectMs: number;
+  planMs: number;
+  totalMs: number;
+  startedAt: string;
+} | null>(null);
 
 export function useSyncState() {
   return {
@@ -26,6 +33,7 @@ export function useSyncState() {
     progress,
     errorMessage,
     activeDialog,
+    buildPlanTiming,
     setState: (s: SyncState) => {
       state.value = s;
     },
@@ -42,6 +50,7 @@ export function useSyncState() {
       result.value = null;
       errorMessage.value = null;
       activeDialog.value = null;
+      buildPlanTiming.value = null;
     }
   };
 }
