@@ -5,13 +5,19 @@ import { vi } from 'vitest';
  * テスト間で状態が漏れないよう beforeEach で呼び出すことを想定する。
  */
 export function mockEagle(overrides?: Partial<Eagle.EagleAPI>) {
-  const defaults: Eagle.EagleAPI = {
+  const defaults = {
     item: {
       getAll: vi.fn().mockResolvedValue([]),
       getSelected: vi.fn().mockResolvedValue([]),
       get: vi.fn().mockResolvedValue([]),
       getById: vi.fn(),
       getByIds: vi.fn()
+    },
+    folder: {
+      getAll: vi.fn().mockResolvedValue([])
+    },
+    smartFolder: {
+      getAll: vi.fn().mockResolvedValue([])
     },
     tagGroup: {
       get: vi.fn().mockResolvedValue([]),
@@ -21,6 +27,7 @@ export function mockEagle(overrides?: Partial<Eagle.EagleAPI>) {
     app: {
       theme: 'LIGHT',
       locale: 'en_US',
+      build: 99,
       isDarkColors: () => false
     },
     window: { setOpacity: vi.fn() },
