@@ -11,6 +11,7 @@ export type { PerfRecord } from './perfLog';
 export { MANAGED_SUBDIR, MARKER_FILE } from './constants';
 export type {
   Settings,
+  CategoryKey,
   ResolvedPaths,
   EagleItem,
   EagleTagGroup,

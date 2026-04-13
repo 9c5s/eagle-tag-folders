@@ -1,16 +1,30 @@
 // ---- ユーザー設定 (localStorage に永続化) ----
+export type CategoryKey = 'folders' | 'smartFolders' | 'all' | 'untagged' | 'uncategorized';
+
 export type Settings = {
   rootDir: string | null;
   excludeTags: string[];
   namingMode: 'suffix' | 'id';
   sanitizeReplacement: string;
+  categories: Record<CategoryKey, boolean>;
+  excludedFolderIds: string[];
+  excludedSmartFolderIds: string[];
 };
 
 export const DEFAULT_SETTINGS: Settings = {
   rootDir: null,
   excludeTags: [],
   namingMode: 'suffix',
-  sanitizeReplacement: '_'
+  sanitizeReplacement: '_',
+  categories: {
+    folders: true,
+    smartFolders: true,
+    all: false,
+    untagged: false,
+    uncategorized: false
+  },
+  excludedFolderIds: [],
+  excludedSmartFolderIds: []
 };
 
 // ---- 派生パス ----
