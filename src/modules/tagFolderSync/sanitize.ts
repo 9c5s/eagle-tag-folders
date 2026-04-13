@@ -33,3 +33,37 @@ export function sanitizeFileName(raw: string, replacement: string): string {
   const sanitizedExt = ext.replace(FORBIDDEN_CHARS, replacement);
   return sanitizedBase + sanitizedExt;
 }
+
+type Platform = NodeJS.Platform;
+
+export interface PathBudget {
+  maxTotal: number;
+  alreadyUsed: number;
+  remaining: number;
+  suffixReserve: number;
+}
+
+export function computePathBudget(managedDir: string, platform: Platform): PathBudget {
+  const maxTotal = platform === 'win32' ? 260 : platform === 'darwin' ? 1024 : 4096;
+  const alreadyUsed = managedDir.length;
+  return {
+    maxTotal,
+    alreadyUsed,
+    remaining: maxTotal - alreadyUsed,
+    suffixReserve: 16
+  };
+}
+
+export function fitsWithinBudget(
+  segments: string[],
+  extLength: number,
+  budget: PathBudget
+): boolean {
+  const sep = 1;
+  const total =
+    budget.alreadyUsed +
+    segments.reduce((acc, s) => acc + sep + s.length, 0) +
+    extLength +
+    budget.suffixReserve;
+  return total <= budget.maxTotal;
+}

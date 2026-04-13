@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeDirName, sanitizeFileName } from '@/modules/tagFolderSync/sanitize';
+import {
+  sanitizeDirName,
+  sanitizeFileName,
+  computePathBudget,
+  fitsWithinBudget
+} from '@/modules/tagFolderSync/sanitize';
 
 describe('sanitizeDirName', () => {
   it('通常文字列はそのまま', () => {
@@ -62,5 +67,38 @@ describe('sanitizeFileName', () => {
   });
   it('拡張子なしファイルは DirName と同じ扱い', () => {
     expect(sanitizeFileName('abc', '_')).toBe('abc');
+  });
+});
+
+describe('computePathBudget', () => {
+  it('Windows の上限は 260', () => {
+    const b = computePathBudget('C:\\\\root\\\\eagle-tag-folders', 'win32');
+    expect(b.maxTotal).toBe(260);
+  });
+  it('macOS の上限は 1024', () => {
+    const b = computePathBudget('/root/eagle-tag-folders', 'darwin');
+    expect(b.maxTotal).toBe(1024);
+  });
+  it('Linux の上限は 4096', () => {
+    const b = computePathBudget('/root/eagle-tag-folders', 'linux');
+    expect(b.maxTotal).toBe(4096);
+  });
+  it('alreadyUsed = managedDir パス長', () => {
+    const p = 'C:\\\\root\\\\eagle-tag-folders';
+    const b = computePathBudget(p, 'win32');
+    expect(b.alreadyUsed).toBe(p.length);
+    expect(b.remaining).toBe(260 - p.length);
+  });
+});
+
+describe('fitsWithinBudget', () => {
+  it('余裕があれば true', () => {
+    const b = computePathBudget('/r/eagle-tag-folders', 'linux');
+    expect(fitsWithinBudget(['g', 't', 'file.png'], 4, b)).toBe(true);
+  });
+  it('budget 超えると false', () => {
+    const b = computePathBudget('C:\\\\root\\\\eagle-tag-folders', 'win32');
+    const longName = 'x'.repeat(250);
+    expect(fitsWithinBudget(['group', 'tag', longName + '.png'], 4, b)).toBe(false);
   });
 });
