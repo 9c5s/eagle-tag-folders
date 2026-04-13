@@ -23,15 +23,15 @@ const { summary } = useSyncState();
 .plan-summary {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 12px;
-  padding: 12px;
+  padding: 16px;
   border: 1px solid var(--color-border-primary);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--color-bg-primary);
 }
 .warnings {
-  margin-top: 6px;
+  margin-top: 8px;
   padding-left: 18px;
   color: var(--color-warning);
   font-size: 11px;

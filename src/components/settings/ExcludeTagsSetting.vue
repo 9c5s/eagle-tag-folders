@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, inject } from 'vue';
 import type { Settings } from '@/modules/tagFolderSync';
+import SettingsSection from './SettingsSection.vue';
 
 const settings = inject<Settings>('settings')!;
 // 新規タグ入力用の状態
 const newTag = ref('');
 
 // 除外タグを追加する
-function add() {
+function add(): void {
   const v = newTag.value.trim();
   if (v.length > 0 && !settings.excludeTags.includes(v)) {
     settings.excludeTags.push(v);
@@ -16,77 +17,43 @@ function add() {
 }
 
 // 除外タグを削除する
-function remove(i: number) {
+function remove(i: number): void {
   settings.excludeTags.splice(i, 1);
 }
 </script>
 
 <template>
-  <div class="exclude-tags-setting">
-    <label class="label">除外タグ</label>
-    <div class="tags">
-      <span v-for="(t, i) in settings.excludeTags" :key="i" class="tag">
+  <SettingsSection title="除外タグ">
+    <div v-if="settings.excludeTags.length > 0" class="tag-list">
+      <el-tag
+        v-for="(t, i) in settings.excludeTags"
+        :key="i"
+        closable
+        :disable-transitions="true"
+        @close="remove(i)"
+      >
         {{ t }}
-        <button @click="remove(i)">×</button>
-      </span>
+      </el-tag>
     </div>
     <div class="input-row">
-      <input v-model="newTag" placeholder="除外タグ名" @keydown.enter="add" />
-      <button @click="add">追加</button>
+      <el-input v-model="newTag" placeholder="除外タグ名" size="small" @keydown.enter="add" />
+      <el-button size="small" @click="add">追加</el-button>
     </div>
-  </div>
+  </SettingsSection>
 </template>
 
 <style lang="scss" scoped>
-.exclude-tags-setting {
+.tag-list {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.input-row {
+  display: flex;
   gap: 6px;
 
-  .label {
-    font-weight: bold;
-    font-size: 12px;
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-
-  .tag {
-    padding: 2px 6px;
-    border-radius: 4px;
-    background: var(--color-bg-active);
-    font-size: 11px;
-
-    button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: inherit;
-    }
-  }
-
-  .input-row {
-    display: flex;
-    gap: 4px;
-
-    input {
-      flex: 1;
-      font-size: 12px;
-      padding: 4px;
-      border-radius: 4px;
-      border: 1px solid var(--color-border-primary);
-    }
-
-    button {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: 1px solid var(--color-border-primary);
-      cursor: pointer;
-    }
+  :deep(.el-input) {
+    flex: 1;
   }
 }
 </style>

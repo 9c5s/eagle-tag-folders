@@ -1,17 +1,12 @@
-<script setup lang="ts">
-import HeaderVue from './HeaderVue.vue';
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="layout-root">
-    <HeaderVue />
     <div class="layout-container">
       <aside class="layout-sidebar">
-        <!-- Phase 6 で SettingsSidebarVue を配置 -->
         <slot name="sidebar"></slot>
       </aside>
       <main class="layout-main">
-        <!-- Phase 6 で MainPanel を配置 -->
         <slot name="main"></slot>
       </main>
     </div>
@@ -19,7 +14,11 @@ import HeaderVue from './HeaderVue.vue';
 </template>
 
 <style lang="scss" scoped>
+@use '@styles/modules/mixins' as mixins;
+
 .layout-root {
+  --sidebar-min-width: 300px;
+  --sidebar-max-width: 320px;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -30,8 +29,8 @@ import HeaderVue from './HeaderVue.vue';
   overflow: hidden;
 }
 .layout-sidebar {
-  min-width: 300px;
-  max-width: 340px;
+  min-width: var(--sidebar-min-width);
+  max-width: var(--sidebar-max-width);
   flex-shrink: 0;
   padding: 8px;
 }
@@ -41,5 +40,10 @@ import HeaderVue from './HeaderVue.vue';
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+
+  @include mixins.dark {
+    background: rgba(255, 255, 255, 0.03);
+  }
 }
 </style>

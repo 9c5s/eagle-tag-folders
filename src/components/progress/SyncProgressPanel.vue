@@ -9,9 +9,7 @@ const percent = computed(() =>
 
 <template>
   <div class="sync-progress">
-    <div class="bar">
-      <div class="fill" :style="{ width: percent + '%' }"></div>
-    </div>
+    <el-progress :percentage="percent" :show-text="false" color="var(--color-primary)" />
     <div class="text">{{ progress.current }} / {{ progress.total }} ({{ percent }}%)</div>
     <div class="current">処理中: {{ progress.currentTag }}</div>
   </div>
@@ -19,26 +17,18 @@ const percent = computed(() =>
 
 <style lang="scss" scoped>
 .sync-progress {
-  padding: 12px;
+  padding: 16px;
   border: 1px solid var(--color-border-primary);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--color-bg-primary);
-  .bar {
-    width: 100%;
-    height: 4px;
-    background: var(--color-border-primary);
-    border-radius: 2px;
-    overflow: hidden;
-    .fill {
-      height: 100%;
-      background: var(--color-primary);
-      transition: width 120ms;
-    }
-  }
   .text,
   .current {
     font-size: 12px;
-    margin-top: 4px;
+    margin-top: 6px;
+    color: var(--color-text-primary);
+  }
+  .current {
+    color: var(--color-text-secondary);
   }
 }
 </style>

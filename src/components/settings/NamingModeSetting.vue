@@ -1,40 +1,25 @@
 <script setup lang="ts">
 import { inject } from 'vue';
 import type { Settings } from '@/modules/tagFolderSync';
+import SettingsSection from './SettingsSection.vue';
 
 const settings = inject<Settings>('settings')!;
 </script>
 
 <template>
-  <div class="naming-mode">
-    <label class="label">symlink 命名</label>
-    <label class="option">
-      <input v-model="settings.namingMode" type="radio" value="suffix" />
-      衝突時サフィックス (推奨)
-    </label>
-    <label class="option">
-      <input v-model="settings.namingMode" type="radio" value="id" />
-      常に ID 付加
-    </label>
-  </div>
+  <SettingsSection title="symlink 命名">
+    <el-radio-group v-model="settings.namingMode" class="naming-radios">
+      <el-radio value="suffix">衝突時サフィックス (推奨)</el-radio>
+      <el-radio value="id">常に ID 付加</el-radio>
+    </el-radio-group>
+  </SettingsSection>
 </template>
 
 <style lang="scss" scoped>
-.naming-mode {
+.naming-radios {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
-
-  .label {
-    font-weight: bold;
-    font-size: 12px;
-  }
-
-  .option {
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
 }
 </style>

@@ -2,14 +2,16 @@
 import { inject, ref } from 'vue';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { ElMessageBox } from 'element-plus';
 import type { Settings } from '@/modules/tagFolderSync';
+import SettingsSection from './SettingsSection.vue';
 
 const settings = inject<Settings>('settings')!;
 // エラーメッセージの表示用状態
 const errorMessage = ref('');
 
 // パスを検証してルートディレクトリに設定する
-async function validateAndSet(candidate: string) {
+async function validateAndSet(candidate: string): Promise<void> {
   errorMessage.value = '';
   const resolved = path.resolve(candidate);
   try {
@@ -25,7 +27,7 @@ async function validateAndSet(candidate: string) {
 }
 
 // ファイルピッカーからフォルダを選択する
-async function onFolderPick(event: Event) {
+async function onFolderPick(event: Event): Promise<void> {
   const target = event.target as HTMLInputElement;
   const files = target.files;
   if (files === null || files.length === 0) {
@@ -42,20 +44,47 @@ async function onFolderPick(event: Event) {
     'ディレクトリのパスを取得できませんでした。「パス入力」で絶対パスを指定してください';
 }
 
+// フォルダピッカーをクリックで開く
+function openFolderPicker(): void {
+  const picker = (globalThis as Window & typeof globalThis).document.getElementById(
+    'root-dir-picker'
+  );
+  picker?.click();
+}
+
 // テキスト入力でパスを手動入力する
-async function manualInput() {
-  const input = globalThis.prompt('ルートディレクトリの絶対パス:', settings.rootDir ?? '');
-  if (input !== null && input.length > 0) {
-    await validateAndSet(input);
+async function manualInput(): Promise<void> {
+  try {
+    const result = await ElMessageBox.prompt(
+      '絶対パスを入力してください',
+      'ルートディレクトリのパス入力',
+      {
+        inputValue: settings.rootDir ?? '',
+        confirmButtonText: 'OK',
+        cancelButtonText: 'キャンセル',
+        inputValidator: (val) => (val.length > 0 ? true : 'パスを入力してください')
+      }
+    );
+    await validateAndSet(result.value);
+  } catch {
+    // ユーザーがキャンセルした場合は何もしない
   }
 }
 </script>
 
 <template>
-  <div class="root-dir-setting">
-    <label class="label">ルートディレクトリ</label>
-    <div class="value">{{ settings.rootDir ?? '(未設定)' }}</div>
-    <div class="actions">
+  <SettingsSection title="ルートディレクトリ">
+    <el-tooltip
+      :content="settings.rootDir ?? '(未設定)'"
+      placement="top"
+      :show-after="300"
+      :disabled="settings.rootDir === null"
+    >
+      <div class="root-dir-value" :class="{ 'is-empty': settings.rootDir === null }">
+        {{ settings.rootDir ?? '(未設定)' }}
+      </div>
+    </el-tooltip>
+    <div class="root-dir-actions">
       <input
         id="root-dir-picker"
         type="file"
@@ -63,55 +92,44 @@ async function manualInput() {
         style="display: none"
         @change="onFolderPick"
       />
-      <label for="root-dir-picker" class="btn">フォルダ選択...</label>
-      <button @click="manualInput">パス入力...</button>
+      <el-button size="small" @click="openFolderPicker">フォルダ選択...</el-button>
+      <el-button size="small" @click="manualInput">パス入力...</el-button>
     </div>
-    <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
-    <p class="hint">空ディレクトリを指定したい場合は「パス入力」で絶対パスを指定してください</p>
-  </div>
+    <div v-if="errorMessage" class="root-dir-error">{{ errorMessage }}</div>
+    <p class="root-dir-hint">
+      空ディレクトリを指定したい場合は「パス入力」で絶対パスを指定してください
+    </p>
+  </SettingsSection>
 </template>
 
 <style lang="scss" scoped>
-.root-dir-setting {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.root-dir-value {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  padding: 4px 6px;
+  background: var(--color-bg-active);
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
-  .label {
-    font-weight: bold;
-    font-size: 12px;
-  }
-
-  .value {
-    font-size: 12px;
-    color: var(--color-text-secondary);
-    word-break: break-all;
-  }
-
-  .actions {
-    display: flex;
-    gap: 6px;
-  }
-
-  .btn,
-  button {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid var(--color-border-primary);
-    background: transparent;
-    color: var(--color-text-primary);
-    cursor: pointer;
-  }
-
-  .error {
-    color: var(--color-negative);
-    font-size: 11px;
-  }
-
-  .hint {
-    font-size: 11px;
+  &.is-empty {
     color: var(--color-text-tertiary);
+    font-style: italic;
   }
+}
+.root-dir-actions {
+  display: flex;
+  gap: 6px;
+}
+.root-dir-error {
+  color: var(--color-negative);
+  font-size: 11px;
+}
+.root-dir-hint {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin: 0;
+  line-height: 1.35;
 }
 </style>

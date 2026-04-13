@@ -59,11 +59,11 @@ function handleForceExit() {
 <style lang="scss" scoped>
 .main-panel {
   flex: 1;
-  padding: 12px;
+  padding: 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   position: relative;
 }
 .drag-helper {
@@ -75,13 +75,13 @@ function handleForceExit() {
   height: 28px;
 }
 .error-box {
-  padding: 12px;
+  padding: 16px;
   border: 1px solid var(--color-negative);
-  border-radius: 6px;
+  border-radius: 8px;
   background: rgba(255, 59, 48, 0.1);
   color: var(--color-negative);
   h4 {
-    margin: 0 0 4px;
+    margin: 0 0 6px;
     font-size: 13px;
   }
   p {

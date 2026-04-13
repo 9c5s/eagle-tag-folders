@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue';
+import { ElMessageBox } from 'element-plus';
 import type { Settings } from '@/modules/tagFolderSync';
 import { cleanupOldDirs } from '@/modules/tagFolderSync';
 
@@ -10,12 +11,21 @@ const removing = ref(false);
 const message = ref('');
 
 // 旧バージョンディレクトリを削除する
-async function run() {
+async function run(): Promise<void> {
   if (settings.rootDir === null) {
     message.value = 'ルートディレクトリが未設定です';
     return;
   }
-  if (!globalThis.confirm('旧バージョンディレクトリを削除しますか?')) return;
+  try {
+    await ElMessageBox.confirm('旧バージョンディレクトリを削除しますか?', '確認', {
+      confirmButtonText: '削除',
+      cancelButtonText: 'キャンセル',
+      type: 'warning'
+    });
+  } catch {
+    // ユーザーがキャンセルした場合は何もしない
+    return;
+  }
   removing.value = true;
   try {
     const { removed, errors } = await cleanupOldDirs(settings.rootDir);
@@ -28,8 +38,8 @@ async function run() {
 
 <template>
   <div class="cleanup-old">
-    <button :disabled="removing" @click="run">旧バージョンを削除</button>
-    <span v-if="message" class="message">{{ message }}</span>
+    <el-button class="cleanup-btn" :loading="removing" @click="run">旧バージョンを削除</el-button>
+    <span v-if="message" class="cleanup-message">{{ message }}</span>
   </div>
 </template>
 
@@ -37,24 +47,14 @@ async function run() {
 .cleanup-old {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-
-  button {
-    font-size: 12px;
-    padding: 4px 8px;
-    border-radius: 4px;
-    border: 1px solid var(--color-border-primary);
-    cursor: pointer;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  .message {
-    font-size: 11px;
-    color: var(--color-text-secondary);
-  }
+  gap: 6px;
+}
+.cleanup-btn {
+  width: 100%;
+}
+.cleanup-message {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-align: center;
 }
 </style>
