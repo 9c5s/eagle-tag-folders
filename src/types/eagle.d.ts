@@ -6,7 +6,6 @@
  * 意図的に省いたメンバー:
  *  - Item: select(), open(), replaceFile(), refreshThumbnail(), setCustomThumbnail()
  *  - TagGroup: save(), remove(), addTags(), removeTags(), id
- *  - Folder 関連 (今回の機能では未使用)
  *  - screen, notification, contextMenu, clipboard, drag, shell, log
  *  - Tag 関連 (tag.get, tag.merge 等)
  *  - dialog.showSaveDialog / showMessageBox / showErrorBox (今回の機能では未使用)
@@ -36,6 +35,21 @@ declare namespace Eagle {
     description?: string;
   }
 
+  interface Folder {
+    readonly id: string;
+    readonly name: string;
+    readonly parent: string | null;
+    readonly children: Folder[];
+  }
+
+  interface SmartFolder {
+    readonly id: string;
+    readonly name: string;
+    readonly parent: string | null;
+    readonly children: SmartFolder[];
+    getItems(options?: { fields?: Array<keyof Item> }): Promise<Item[]>;
+  }
+
   interface Plugin {
     manifest: { id: string; version: string; name: string; logo: string };
     path: string;
@@ -45,6 +59,7 @@ declare namespace Eagle {
     readonly theme: 'Auto' | 'LIGHT' | 'LIGHTGRAY' | 'GRAY' | 'DARK' | 'BLUE' | 'PURPLE';
     readonly locale: string;
     isDarkColors(): boolean;
+    readonly build: number;
   }
 
   interface ItemGetOptions {
@@ -52,6 +67,8 @@ declare namespace Eagle {
     folders?: string[];
     ext?: string;
     fields?: Array<keyof Item>;
+    isUntagged?: boolean;
+    isUnfiled?: boolean;
   }
 
   interface ShowOpenDialogOptions {
@@ -89,6 +106,12 @@ declare namespace Eagle {
     tagGroup: {
       get(): Promise<TagGroup[]>;
       create(opts: { name: string; tags?: string[] }): Promise<TagGroup>;
+    };
+    folder: {
+      getAll(): Promise<Folder[]>;
+    };
+    smartFolder: {
+      getAll(): Promise<SmartFolder[]>;
     };
     library: {
       readonly path: string;
