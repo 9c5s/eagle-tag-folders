@@ -4,10 +4,12 @@ import { buildPlan, execute, validatePrerequisites, needsConsent } from '@/modul
 import { useSyncState } from './useSyncState';
 
 export function useSync() {
+  // inject は setup コンテキストでのみ有効なため、useSync 呼び出し時に一度だけ解決する。
+  // イベントハンドラ内で inject を呼ぶと activeInstance が null となり undefined が返る。
+  const settings = inject<Settings>('settings')!;
   const state = useSyncState();
 
   async function triggerPreview() {
-    const settings = inject<Settings>('settings')!;
     state.setState('Planning');
     try {
       const { summary: s, plans: p } = await buildPlan(settings);
@@ -21,7 +23,6 @@ export function useSync() {
   }
 
   async function triggerSync() {
-    const settings = inject<Settings>('settings')!;
     state.setState('Syncing');
 
     // 1. 前提チェックと同意判定を先行
@@ -73,7 +74,6 @@ export function useSync() {
 
   async function confirmConsentAndRun() {
     state.closeDialog();
-    const settings = inject<Settings>('settings')!;
     await runExecute(settings);
   }
 
