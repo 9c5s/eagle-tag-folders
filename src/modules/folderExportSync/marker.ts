@@ -1,5 +1,6 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import type { MarkerPayload } from './types';
 
 export const MARKER_FILE = '.managed-by-eagle.json';
 
@@ -7,12 +8,9 @@ export const MARKER_FILE = '.managed-by-eagle.json';
  * 管理ディレクトリに目印ファイルを書き込む。
  * 既存ファイルがあれば上書きする。
  */
-export async function writeMarker(
-  managedDir: string,
-  meta: { version: string; createdAt: string; pluginId: string }
-): Promise<void> {
-  const payload = JSON.stringify(meta, null, 2);
-  await fs.writeFile(path.join(managedDir, MARKER_FILE), payload, 'utf8');
+export async function writeMarker(managedDir: string, payload: MarkerPayload): Promise<void> {
+  const body = JSON.stringify(payload, null, 2);
+  await fs.writeFile(path.join(managedDir, MARKER_FILE), body, 'utf8');
 }
 
 /**

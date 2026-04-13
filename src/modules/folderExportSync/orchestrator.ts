@@ -223,9 +223,12 @@ export async function execute(
     await fs.mkdir(paths.stagingDir, { recursive: true });
     stagingCreated = true;
     await writeMarker(paths.stagingDir, {
-      version: '1.0.0',
-      createdAt: new Date().toISOString(),
-      pluginId: eagle.plugin?.manifest?.id ?? 'eagle-folder-export'
+      schemaVersion: 2,
+      pluginId: eagle.plugin?.manifest?.id ?? 'eagle-folder-export',
+      pluginVersion: eagle.plugin?.manifest?.version ?? '0.1.0',
+      managedAt: new Date().toISOString(),
+      locale: eagle.app.locale ?? 'en',
+      categories: { ...settings.categories }
     });
     const { errors } = await writeToStaging(plans, paths, settings, callbacks);
 

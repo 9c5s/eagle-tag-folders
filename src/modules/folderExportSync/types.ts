@@ -134,3 +134,13 @@ export type CollectResult = {
   sfItemsCache: Map<string, EagleItem[]>;
   uncategorizedItems: EagleItem[];
 };
+
+// ---- 目印ファイル (.managed-by-eagle.json) のスキーマ ----
+export type MarkerPayload = {
+  schemaVersion: 2;
+  pluginId: string;
+  pluginVersion: string;
+  managedAt: string;
+  locale: string;
+  categories: Record<CategoryKey, boolean>;
+};
