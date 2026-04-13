@@ -8,7 +8,8 @@ const item = (id: string, name: string, tags: string[]): EagleItem => ({
   name,
   ext: 'png',
   filePath: `/src/${id}.png`,
-  tags
+  tags,
+  folders: []
 });
 
 const MANAGED = '/root/eagle-folder-export';

@@ -9,9 +9,9 @@ beforeEach(() => {
       getAll: vi.fn(),
       getSelected: vi.fn(),
       get: vi.fn().mockResolvedValue([
-        { id: 'i1', name: 'a', ext: 'png', filePath: '/src/a.png', tags: ['sky'] },
-        { id: 'i2', name: 'b', ext: 'png', filePath: '/src/b.png', tags: [] },
-        { id: 'i3', name: 'c', ext: 'png', filePath: '/src/c.png', tags: ['draft'] }
+        { id: 'i1', name: 'a', ext: 'png', filePath: '/src/a.png', tags: ['sky'], folders: [] },
+        { id: 'i2', name: 'b', ext: 'png', filePath: '/src/b.png', tags: [], folders: [] },
+        { id: 'i3', name: 'c', ext: 'png', filePath: '/src/c.png', tags: ['draft'], folders: [] }
       ]),
       getById: vi.fn(),
       getByIds: vi.fn()

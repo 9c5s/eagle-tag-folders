@@ -29,6 +29,7 @@ export type EagleItem = {
   ext: string;
   filePath: string;
   tags: string[];
+  folders: string[];
 };
 
 export type EagleTagGroup = {

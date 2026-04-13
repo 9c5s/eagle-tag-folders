@@ -24,7 +24,8 @@ describe('resolveAllPaths', () => {
     name: id,
     ext: 'png',
     filePath: '/src/' + id,
-    tags
+    tags,
+    folders: []
   });
 
   it('アイテム × タグ × グループ展開', () => {

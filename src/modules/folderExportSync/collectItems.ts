@@ -12,7 +12,7 @@ export async function collectItems(excludeTags: string[]): Promise<{
   excludedCount: number;
 }> {
   const rawItems = await eagle.item.get({
-    fields: ['id', 'name', 'ext', 'filePath', 'tags']
+    fields: ['id', 'name', 'ext', 'filePath', 'tags', 'folders']
   });
   const rawGroups = await eagle.tagGroup.get();
 
@@ -34,7 +34,8 @@ export async function collectItems(excludeTags: string[]): Promise<{
       name: r.name,
       ext: r.ext,
       filePath: r.filePath,
-      tags: [...r.tags]
+      tags: [...r.tags],
+      folders: [...r.folders]
     });
   }
 

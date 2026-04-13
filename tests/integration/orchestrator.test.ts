@@ -22,11 +22,16 @@ beforeEach(async () => {
     item: {
       getAll: vi.fn(),
       getSelected: vi.fn(),
-      get: vi
-        .fn()
-        .mockResolvedValue([
-          { id: 'i1', name: 'photo', ext: 'txt', filePath: sourceFile, tags: ['sky'] }
-        ]),
+      get: vi.fn().mockResolvedValue([
+        {
+          id: 'i1',
+          name: 'photo',
+          ext: 'txt',
+          filePath: sourceFile,
+          tags: ['sky'],
+          folders: []
+        }
+      ]),
       getById: vi.fn(),
       getByIds: vi.fn()
     } as unknown as Eagle.EagleAPI['item'],
