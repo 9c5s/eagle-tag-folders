@@ -82,6 +82,7 @@ export function useSync() {
     try {
       const r = await execute(state.plans.value, settings, {
         onProgress: (current, total, currentTag) => {
+          // currentTag は callback 互換維持のための名前。新仕様では「現在処理中のディレクトリ表示名」を渡す。
           state.progress.value = { current, total, currentTag };
         },
         onError: () => {},
@@ -130,21 +131,20 @@ export function useSync() {
         endedAt: new Date().toISOString(),
         totalMs: Math.round(end - start) + bp.totalMs,
         settings: {
+          rootDir: settings.rootDir,
           namingMode: settings.namingMode,
-          excludeTags: [...settings.excludeTags],
           sanitizeReplacement: settings.sanitizeReplacement,
-          rootDir: settings.rootDir
+          categories: { ...settings.categories },
+          excludedFolderCount: settings.excludedFolderIds.length,
+          excludedSmartFolderCount: settings.excludedSmartFolderIds.length
         },
-        buildPlan: {
-          collectMs: bp.collectMs,
-          planMs: bp.planMs,
-          totalMs: bp.totalMs
-        },
+        buildPlan: { collectMs: bp.collectMs, planMs: bp.planMs, totalMs: bp.totalMs },
         planSummary: {
           itemCount: summary.itemCount,
-          excludedItemCount: summary.excludedItemCount,
-          groupCount: summary.groupCount,
-          tagCount: summary.tagCount,
+          folderCount: summary.folderCount,
+          smartFolderCount: summary.smartFolderCount,
+          excludedFolderCount: summary.excludedFolderCount,
+          excludedSmartFolderCount: summary.excludedSmartFolderCount,
           symlinkCount: summary.symlinkCount,
           collisionCount: summary.collisionCount
         },

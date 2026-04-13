@@ -19,14 +19,23 @@ function makeRecord(overrides: Partial<PerfRecord> = {}): PerfRecord {
       rootDir: 'D:/tmp/eagle',
       namingMode: 'suffix',
       sanitizeReplacement: '_',
-      excludeTags: ['foo', 'bar']
+      categories: {
+        folders: true,
+        smartFolders: true,
+        all: false,
+        untagged: false,
+        uncategorized: false
+      },
+      excludedFolderCount: 2,
+      excludedSmartFolderCount: 1
     },
     buildPlan: { collectMs: 1200, planMs: 80, totalMs: 1280 },
     planSummary: {
       itemCount: 13500,
-      excludedItemCount: 161,
-      groupCount: 3,
-      tagCount: 8,
+      folderCount: 12,
+      smartFolderCount: 4,
+      excludedFolderCount: 2,
+      excludedSmartFolderCount: 1,
       symlinkCount: 13339,
       collisionCount: 0
     },
@@ -58,11 +67,21 @@ describe('perfLog', () => {
     expect(text).toContain('===== Run 2026-04-13T09:00:00.000Z =====');
     expect(text).toContain('namingMode:');
     expect(text).toContain('suffix');
+    expect(text).toContain('categories:');
+    expect(text).toContain('"folders":true');
+    expect(text).toContain('folderCount:');
+    expect(text).toContain('smartFolderCount:');
+    expect(text).toContain('excludedFolderCount:');
+    expect(text).toContain('excludedSmartFolderCount:');
     expect(text).toContain('symlinkCount:');
     expect(text).toContain('13339');
     expect(text).toContain('writeMs:');
     expect(text).toContain('17500');
     expect(text).not.toContain('concurrency');
+    expect(text).not.toContain('excludeTags:');
+    expect(text).not.toContain('excludedItemCount:');
+    expect(text).not.toContain('groupCount:');
+    expect(text).not.toContain('tagCount:');
   });
 
   it('appendPerfLog は logDir 直下に perf.log を作る', async () => {

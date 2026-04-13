@@ -11,17 +11,21 @@ export type PerfRecord = {
   startedAt: string;
   endedAt: string;
   totalMs: number;
-  settings: Pick<Settings, 'namingMode' | 'excludeTags' | 'sanitizeReplacement' | 'rootDir'>;
-  buildPlan: {
-    collectMs: number;
-    planMs: number;
-    totalMs: number;
+  settings: {
+    rootDir: string | null;
+    namingMode: Settings['namingMode'];
+    sanitizeReplacement: string;
+    categories: Settings['categories'];
+    excludedFolderCount: number;
+    excludedSmartFolderCount: number;
   };
+  buildPlan: { collectMs: number; planMs: number; totalMs: number };
   planSummary: {
     itemCount: number;
-    excludedItemCount: number;
-    groupCount: number;
-    tagCount: number;
+    folderCount: number;
+    smartFolderCount: number;
+    excludedFolderCount: number;
+    excludedSmartFolderCount: number;
     symlinkCount: number;
     collisionCount: number;
   };
@@ -53,7 +57,9 @@ export function formatPerfRecord(r: PerfRecord): string {
     '[Settings]',
     `${pad('namingMode:', W)}${r.settings.namingMode}`,
     `${pad('sanitizeReplace:', W)}${JSON.stringify(r.settings.sanitizeReplacement)}`,
-    `${pad('excludeTags:', W)}${JSON.stringify(r.settings.excludeTags)}`,
+    `${pad('categories:', W)}${JSON.stringify(r.settings.categories)}`,
+    `${pad('excludedFolderCount:', W)}${r.settings.excludedFolderCount}`,
+    `${pad('excludedSmartFolderCount:', W)}${r.settings.excludedSmartFolderCount}`,
     `${pad('rootDir:', W)}${r.settings.rootDir ?? ''}`,
     '',
     '[BuildPlan]',
@@ -63,9 +69,10 @@ export function formatPerfRecord(r: PerfRecord): string {
     '',
     '[PlanSummary]',
     `${pad('itemCount:', W)}${r.planSummary.itemCount}`,
-    `${pad('excludedItemCount:', W)}${r.planSummary.excludedItemCount}`,
-    `${pad('groupCount:', W)}${r.planSummary.groupCount}`,
-    `${pad('tagCount:', W)}${r.planSummary.tagCount}`,
+    `${pad('folderCount:', W)}${r.planSummary.folderCount}`,
+    `${pad('smartFolderCount:', W)}${r.planSummary.smartFolderCount}`,
+    `${pad('excludedFolderCount:', W)}${r.planSummary.excludedFolderCount}`,
+    `${pad('excludedSmartFolderCount:', W)}${r.planSummary.excludedSmartFolderCount}`,
     `${pad('symlinkCount:', W)}${r.planSummary.symlinkCount}`,
     `${pad('collisionCount:', W)}${r.planSummary.collisionCount}`,
     '',
