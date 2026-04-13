@@ -82,9 +82,8 @@ execute(plans, settings, ExecutionCallbacks)
 - **Conventional Commits** 準拠、`commitlint.config.ts` の `scope-empty: [2, 'always']` により scope 禁止 (`feat:` は OK、`feat(ui):` は NG)
 - **コミットメッセージの subject は日本語**、type は英語 (`feat`, `fix`, `chore`, `test`, `docs`, `refactor` 等)
 - **lefthook hooks** (全コミットで必ず通す、`--no-verify` 禁止):
-  - `pre-commit`: eslint --fix + prettier --write + vue-tsc --noEmit
+  - `pre-commit`: eslint --fix + prettier --write + vue-tsc --noEmit + vitest run
   - `commit-msg`: commitlint
-  - `pre-push`: vitest run
 - `tsconfig.json` は `target: "ES2021"`, `strict: true`, `noUncheckedIndexedAccess: true` - 配列アクセスは `arr[0]!` または `?? default` で明示
 - ESLint globals に `eagle` (readonly) を設定済み。`window` / `prompt` / `confirm` 等は `(globalThis as Window & typeof globalThis).xxx` で使う (v10 の no-undef 対策)
 
