@@ -1,9 +1,36 @@
 {
-  "header": { "title": "Tag Folders" },
+  "header": { "title": "Folder Export" },
   "settings": {
     "root_dir": "Root directory",
-    "exclude_tags": "Exclude tags",
-    "naming_mode": "Symlink naming"
+    "naming_mode": "Symlink naming",
+    "categories": {
+      "title": "Categories",
+      "folders": "Folders",
+      "smartFolders": "Smart Folders",
+      "all": "All",
+      "untagged": "Untagged",
+      "uncategorized": "Uncategorized"
+    },
+    "excludedFolders": {
+      "title": "Excluded Folders",
+      "refresh": "Refresh",
+      "purge": "Purge deleted IDs"
+    },
+    "excludedSmartFolders": {
+      "title": "Excluded Smart Folders",
+      "refresh": "Refresh",
+      "purge": "Purge deleted IDs"
+    }
+  },
+  "summary": {
+    "folderCount": "Folder count",
+    "smartFolderCount": "Smart folder count",
+    "excludedFolderCount": "Excluded folder count",
+    "excludedSmartFolderCount": "Excluded smart folder count"
+  },
+  "unsupported": {
+    "title": "Cannot launch this plugin",
+    "message": "Eagle 4.0 build22 or later is required"
   },
   "action": { "preview": "Preview", "sync": "Sync" }
 }

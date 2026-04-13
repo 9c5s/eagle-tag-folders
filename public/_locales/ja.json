@@ -1,9 +1,36 @@
 {
-  "header": { "title": "タグフォルダ" },
+  "header": { "title": "Folder Export" },
   "settings": {
     "root_dir": "ルートディレクトリ",
-    "exclude_tags": "除外タグ",
-    "naming_mode": "symlink 命名"
+    "naming_mode": "symlink 命名",
+    "categories": {
+      "title": "カテゴリ",
+      "folders": "フォルダ",
+      "smartFolders": "スマートフォルダ",
+      "all": "すべて",
+      "untagged": "タグなし",
+      "uncategorized": "未分類"
+    },
+    "excludedFolders": {
+      "title": "除外フォルダ",
+      "refresh": "最新の状態を読み込む",
+      "purge": "削除済み ID を一括クリア"
+    },
+    "excludedSmartFolders": {
+      "title": "除外スマートフォルダ",
+      "refresh": "最新の状態を読み込む",
+      "purge": "削除済み ID を一括クリア"
+    }
+  },
+  "summary": {
+    "folderCount": "フォルダ数",
+    "smartFolderCount": "スマートフォルダ数",
+    "excludedFolderCount": "除外フォルダ数",
+    "excludedSmartFolderCount": "除外スマートフォルダ数"
+  },
+  "unsupported": {
+    "title": "このプラグインを起動できません",
+    "message": "Eagle 4.0 build22 以降が必要です"
   },
   "action": { "preview": "プレビュー", "sync": "同期実行" }
 }
