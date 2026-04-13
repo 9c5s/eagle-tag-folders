@@ -63,9 +63,13 @@ export type SymlinkPlan = {
 // ---- サマリ ----
 export type PlanSummary = {
   itemCount: number;
-  excludedItemCount: number;
-  groupCount: number;
-  tagCount: number;
+  excludedItemCount: number; // 旧 (Phase J で削除)
+  groupCount: number; // 旧
+  tagCount: number; // 旧
+  folderCount: number; // 新規
+  smartFolderCount: number; // 新規
+  excludedFolderCount: number; // 新規
+  excludedSmartFolderCount: number; // 新規
   symlinkCount: number;
   collisionCount: number;
   sanitizedNames: Array<{ original: string; sanitized: string }>;
