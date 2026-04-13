@@ -2,7 +2,6 @@
 import RootDirSetting from './RootDirSetting.vue';
 import ExcludeTagsSetting from './ExcludeTagsSetting.vue';
 import NamingModeSetting from './NamingModeSetting.vue';
-import ConcurrencySetting from './ConcurrencySetting.vue';
 import CleanupOldDirsButton from './CleanupOldDirsButton.vue';
 import { useSyncState } from '@/composables/useSyncState';
 import { useSync } from '@/composables/useSync';
@@ -30,8 +29,6 @@ const title =
       <ExcludeTagsSetting />
       <div class="divider" />
       <NamingModeSetting />
-      <div class="divider" />
-      <ConcurrencySetting />
       <div class="divider" />
       <CleanupOldDirsButton />
     </div>

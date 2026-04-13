@@ -4,18 +4,13 @@ export type Settings = {
   excludeTags: string[];
   namingMode: 'suffix' | 'id';
   sanitizeReplacement: string;
-  concurrency: {
-    symlink: number;
-    mkdir: number;
-  };
 };
 
 export const DEFAULT_SETTINGS: Settings = {
   rootDir: null,
   excludeTags: [],
   namingMode: 'suffix',
-  sanitizeReplacement: '_',
-  concurrency: { symlink: 8, mkdir: 8 }
+  sanitizeReplacement: '_'
 };
 
 // ---- 派生パス ----

@@ -25,8 +25,7 @@ export function loadSettings(): Settings {
     const parsed = JSON.parse(raw) as Partial<Settings>;
     cache = {
       ...DEFAULT_SETTINGS,
-      ...parsed,
-      concurrency: { ...DEFAULT_SETTINGS.concurrency, ...(parsed.concurrency ?? {}) }
+      ...parsed
     };
     return cache;
   } catch {

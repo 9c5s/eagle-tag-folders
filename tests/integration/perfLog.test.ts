@@ -13,7 +13,6 @@ function makeRecord(overrides: Partial<PerfRecord> = {}): PerfRecord {
     totalMs: 19000,
     settings: {
       rootDir: 'D:/tmp/eagle',
-      concurrency: { symlink: 8, mkdir: 4 },
       namingMode: 'suffix',
       sanitizeReplacement: '_',
       excludeTags: ['foo', 'bar']
@@ -53,16 +52,13 @@ describe('perfLog', () => {
   it('formatPerfRecord は startedAt を含む区切りと設定値・所要時間を含む', () => {
     const text = formatPerfRecord(makeRecord());
     expect(text).toContain('===== Run 2026-04-13T09:00:00.000Z =====');
-    expect(text).toContain('concurrency.symlink:');
-    expect(text).toContain('8');
-    expect(text).toContain('concurrency.mkdir:');
-    expect(text).toContain('4');
     expect(text).toContain('namingMode:');
     expect(text).toContain('suffix');
     expect(text).toContain('symlinkCount:');
     expect(text).toContain('13339');
     expect(text).toContain('writeMs:');
     expect(text).toContain('17500');
+    expect(text).not.toContain('concurrency');
   });
 
   it('appendPerfLog は logDir 直下に perf.log を作る', async () => {

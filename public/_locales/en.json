@@ -3,8 +3,7 @@
   "settings": {
     "root_dir": "Root directory",
     "exclude_tags": "Exclude tags",
-    "naming_mode": "Symlink naming",
-    "concurrency": "Concurrency"
+    "naming_mode": "Symlink naming"
   },
   "action": { "preview": "Preview", "sync": "Sync" }
 }

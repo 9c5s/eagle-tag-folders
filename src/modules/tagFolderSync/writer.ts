@@ -1,6 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import type { SymlinkPlan, ResolvedPaths, Settings, ExecutionCallbacks, SyncError } from './types';
+import { CONCURRENCY_MKDIR, CONCURRENCY_SYMLINK } from './constants';
 import { classify } from './errorClassifier';
 import { interleaveByDir } from './interleaveByDir';
 
@@ -28,17 +29,17 @@ async function runWithConcurrency<T, R>(
 
 /**
  * SymlinkPlan のリストに基づき、stagingDir 内にディレクトリとシンボリックリンクを作成する。
- * 並列書き込みに対応しており、concurrency 設定に従って同時実行数を制御する。
+ * 並列度は CONCURRENCY_SYMLINK / CONCURRENCY_MKDIR 固定 (実測で 8 並列が最適確認済み)。
  * @param plans 作成するシンボリックリンクのプラン一覧
  * @param paths 派生パス情報
- * @param settings ユーザー設定 (concurrency を参照)
+ * @param _settings ユーザー設定 (現時点では未参照、将来拡張向け)
  * @param callbacks 進捗・エラーコールバック
  * @returns stagingDir パスとエラー一覧
  */
 export async function writeToStaging(
   plans: SymlinkPlan[],
   paths: ResolvedPaths,
-  settings: Settings,
+  _settings: Settings,
   callbacks: ExecutionCallbacks
 ): Promise<{ stagingDir: string; errors: SyncError[] }> {
   const errors: SyncError[] = [];
@@ -46,14 +47,14 @@ export async function writeToStaging(
 
   // 宛先ディレクトリを事前に一括作成する
   const uniqueDirs = new Set(ordered.map((p) => p.destDir));
-  await runWithConcurrency([...uniqueDirs], settings.concurrency.mkdir, async (dir) => {
+  await runWithConcurrency([...uniqueDirs], CONCURRENCY_MKDIR, async (dir) => {
     await fs.mkdir(path.join(paths.stagingDir, dir), { recursive: true });
   });
 
   // シンボリックリンクを並列作成する
   const total = ordered.length;
   let completed = 0;
-  await runWithConcurrency(ordered, settings.concurrency.symlink, async (plan) => {
+  await runWithConcurrency(ordered, CONCURRENCY_SYMLINK, async (plan) => {
     const dest = path.join(paths.stagingDir, plan.destDir, plan.destName);
     try {
       await fs.symlink(plan.sourcePath, dest, 'file');

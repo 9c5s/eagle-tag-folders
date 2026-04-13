@@ -11,10 +11,7 @@ export type PerfRecord = {
   startedAt: string;
   endedAt: string;
   totalMs: number;
-  settings: Pick<
-    Settings,
-    'concurrency' | 'namingMode' | 'excludeTags' | 'sanitizeReplacement' | 'rootDir'
-  >;
+  settings: Pick<Settings, 'namingMode' | 'excludeTags' | 'sanitizeReplacement' | 'rootDir'>;
   buildPlan: {
     collectMs: number;
     planMs: number;
@@ -54,8 +51,6 @@ export function formatPerfRecord(r: PerfRecord): string {
     `${pad('totalMs:', W)}${r.totalMs}`,
     '',
     '[Settings]',
-    `${pad('concurrency.symlink:', W)}${r.settings.concurrency.symlink}`,
-    `${pad('concurrency.mkdir:', W)}${r.settings.concurrency.mkdir}`,
     `${pad('namingMode:', W)}${r.settings.namingMode}`,
     `${pad('sanitizeReplace:', W)}${JSON.stringify(r.settings.sanitizeReplacement)}`,
     `${pad('excludeTags:', W)}${JSON.stringify(r.settings.excludeTags)}`,

@@ -130,7 +130,6 @@ export function useSync() {
         endedAt: new Date().toISOString(),
         totalMs: Math.round(end - start) + bp.totalMs,
         settings: {
-          concurrency: settings.concurrency,
           namingMode: settings.namingMode,
           excludeTags: [...settings.excludeTags],
           sanitizeReplacement: settings.sanitizeReplacement,

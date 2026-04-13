@@ -55,7 +55,6 @@
 - [ ] RootDirSetting: 長い絶対パス (`C:\Users\...\very\deep\path`) を指定しても 1 行にトリミングされ、ホバーで tooltip が全体を表示する
 - [ ] ExcludeTagsSetting: タグが追加され、閉じるボタンの hover が整える
 - [ ] NamingModeSetting: ラジオが 2 つ、チェック済みは primary 色、未チェックは透明
-- [ ] ConcurrencySetting: `<el-input-number>` の増減ボタンで値変更、下限 1 / 上限 64 でストップ、直接入力も反映
 - [ ] CleanupOldDirsButton: フル幅、クリックで `ElMessageBox.confirm` が el-dialog と同寸で開く
 - [ ] `パス入力...` クリック → `ElMessageBox.prompt` が開き、el-dialog と同寸 (border/backdrop-filter/padding/radius)
 - [ ] MainPanel: 各パネル (プレビュー / 進捗 / 結果) が border + border-radius 8px + padding 16px で統一
