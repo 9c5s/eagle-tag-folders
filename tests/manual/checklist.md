@@ -56,7 +56,6 @@
 - [ ] ExcludeTagsSetting: タグが追加され、閉じるボタンの hover が整える
 - [ ] NamingModeSetting: ラジオが 2 つ、チェック済みは primary 色、未チェックは透明
 - [ ] CleanupOldDirsButton: フル幅、クリックで `ElMessageBox.confirm` が el-dialog と同寸で開く
-- [ ] `パス入力...` クリック → `ElMessageBox.prompt` が開き、el-dialog と同寸 (border/backdrop-filter/padding/radius)
 - [ ] MainPanel: 各パネル (プレビュー / 進捗 / 結果) が border + border-radius 8px + padding 16px で統一
 - [ ] SyncProgressPanel: `<el-progress>` のバーが primary 色、高さ 2px
 - [ ] SyncResultPanel: エラー詳細の toggle が `<el-button text size="small">` で目立たない
