@@ -1,6 +1,6 @@
 {
-  "name": "eagle-tag-folders",
-  "version": "1.0.0",
+  "name": "eagle-folder-export",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {

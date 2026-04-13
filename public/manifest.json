@@ -1,9 +1,9 @@
 {
   "id": "ca903e4a-1e07-4101-a006-7ba92d7ac698",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "platform": "all",
   "arch": "all",
-  "name": "Tag Folders",
+  "name": "Folder Export",
   "logo": "/logo.png",
   "keywords": [],
   "devTools": false,
