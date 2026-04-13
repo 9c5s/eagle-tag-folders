@@ -72,19 +72,19 @@ describe('sanitizeFileName', () => {
 
 describe('computePathBudget', () => {
   it('Windows の上限は 260', () => {
-    const b = computePathBudget('C:\\\\root\\\\eagle-tag-folders', 'win32');
+    const b = computePathBudget('C:\\\\root\\\\eagle-folder-export', 'win32');
     expect(b.maxTotal).toBe(260);
   });
   it('macOS の上限は 1024', () => {
-    const b = computePathBudget('/root/eagle-tag-folders', 'darwin');
+    const b = computePathBudget('/root/eagle-folder-export', 'darwin');
     expect(b.maxTotal).toBe(1024);
   });
   it('Linux の上限は 4096', () => {
-    const b = computePathBudget('/root/eagle-tag-folders', 'linux');
+    const b = computePathBudget('/root/eagle-folder-export', 'linux');
     expect(b.maxTotal).toBe(4096);
   });
   it('alreadyUsed = managedDir パス長', () => {
-    const p = 'C:\\\\root\\\\eagle-tag-folders';
+    const p = 'C:\\\\root\\\\eagle-folder-export';
     const b = computePathBudget(p, 'win32');
     expect(b.alreadyUsed).toBe(p.length);
     expect(b.remaining).toBe(260 - p.length);
@@ -93,11 +93,11 @@ describe('computePathBudget', () => {
 
 describe('fitsWithinBudget', () => {
   it('余裕があれば true', () => {
-    const b = computePathBudget('/r/eagle-tag-folders', 'linux');
+    const b = computePathBudget('/r/eagle-folder-export', 'linux');
     expect(fitsWithinBudget(['g', 't', 'file.png'], 4, b)).toBe(true);
   });
   it('budget 超えると false', () => {
-    const b = computePathBudget('C:\\\\root\\\\eagle-tag-folders', 'win32');
+    const b = computePathBudget('C:\\\\root\\\\eagle-folder-export', 'win32');
     const longName = 'x'.repeat(250);
     expect(fitsWithinBudget(['group', 'tag', longName + '.png'], 4, b)).toBe(false);
   });

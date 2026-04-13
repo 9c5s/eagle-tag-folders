@@ -11,7 +11,7 @@ const item = (id: string, name: string, tags: string[]): EagleItem => ({
   tags
 });
 
-const MANAGED = '/root/eagle-tag-folders';
+const MANAGED = '/root/eagle-folder-export';
 
 describe('buildSyncPlan', () => {
   it('アイテム 1 × タグ 1 = プラン 1', () => {
@@ -86,7 +86,7 @@ describe('buildSyncPlan', () => {
       [longItem],
       [],
       DEFAULT_SETTINGS,
-      'C:\\\\root\\\\eagle-tag-folders',
+      'C:\\\\root\\\\eagle-folder-export',
       'win32'
     );
     expect(plans).toHaveLength(0);
@@ -104,7 +104,7 @@ describe('buildSyncPlan', () => {
       [longItem],
       [],
       DEFAULT_SETTINGS,
-      '/root/eagle-tag-folders',
+      '/root/eagle-folder-export',
       'linux'
     );
     expect(plans).toHaveLength(1);

@@ -15,8 +15,8 @@
 
 ## タグパターン
 
-- [ ] タグ未所属のファイル → `<root>/eagle-tag-folders/<tag>/` に配置
-- [ ] タググループ所属タグ → `<root>/eagle-tag-folders/<group>/<tag>/` に配置
+- [ ] タグ未所属のファイル → `<root>/eagle-folder-export/<tag>/` に配置
+- [ ] タググループ所属タグ → `<root>/eagle-folder-export/<group>/<tag>/` に配置
 - [ ] 1 タグが複数グループに所属 → 両方にコピーされる
 - [ ] 同名ファイルが衝突 → サフィックス (2), (3) 付き
 
@@ -31,7 +31,7 @@
 
 ## 同意フロー
 
-- [ ] 既存の eagle-tag-folders が目印ファイルなし → FirstTimeConsentDialog 表示
+- [ ] 既存の eagle-folder-export が目印ファイルなし → FirstTimeConsentDialog 表示
 - [ ] 「別のルートディレクトリを選択」で設定に戻れる
 - [ ] 「続行」で管理下になる
 

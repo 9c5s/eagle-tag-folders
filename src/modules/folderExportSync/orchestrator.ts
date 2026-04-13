@@ -231,7 +231,7 @@ export async function execute(
     await writeMarker(paths.stagingDir, {
       version: '1.0.0',
       createdAt: new Date().toISOString(),
-      pluginId: eagle.plugin?.manifest?.id ?? 'eagle-tag-folders'
+      pluginId: eagle.plugin?.manifest?.id ?? 'eagle-folder-export'
     });
     const { errors } = await writeToStaging(plans, paths, settings, callbacks);
 

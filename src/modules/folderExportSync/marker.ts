@@ -1,7 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-export const MARKER_FILE = '.tagfolders-managed.json';
+export const MARKER_FILE = '.managed-by-eagle.json';
 
 /**
  * 管理ディレクトリに目印ファイルを書き込む。

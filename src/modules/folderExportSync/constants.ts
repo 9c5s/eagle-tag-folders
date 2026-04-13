@@ -3,12 +3,12 @@
  * MVP では完全固定 (UI からも変更不可)。
  * 仕様書 1.5 / 2.1 参照。
  */
-export const MANAGED_SUBDIR = 'eagle-tag-folders' as const;
+export const MANAGED_SUBDIR = 'eagle-folder-export' as const;
 
 /**
  * 目印ファイル名。managedDir 直下に置く。
  */
-export const MARKER_FILE = '.tagfolders-managed.json';
+export const MARKER_FILE = '.managed-by-eagle.json';
 
 /**
  * 設定ファイルの localStorage キー生成関数。

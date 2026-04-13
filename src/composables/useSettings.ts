@@ -9,7 +9,7 @@ let cache: Settings | null = null;
 function key(): string {
   const id =
     (globalThis as unknown as { eagle?: { plugin?: { manifest?: { id?: string } } } }).eagle?.plugin
-      ?.manifest?.id ?? 'eagle-tag-folders';
+      ?.manifest?.id ?? 'eagle-folder-export';
   return settingsKey(id);
 }
 
