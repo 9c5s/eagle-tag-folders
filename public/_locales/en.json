@@ -1,0 +1,10 @@
+{
+  "header": { "title": "Tag Folders" },
+  "settings": {
+    "root_dir": "Root directory",
+    "exclude_tags": "Exclude tags",
+    "naming_mode": "Symlink naming",
+    "concurrency": "Concurrency"
+  },
+  "action": { "preview": "Preview", "sync": "Sync" }
+}

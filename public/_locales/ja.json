@@ -1,0 +1,10 @@
+{
+  "header": { "title": "タグフォルダ" },
+  "settings": {
+    "root_dir": "ルートディレクトリ",
+    "exclude_tags": "除外タグ",
+    "naming_mode": "symlink 命名",
+    "concurrency": "並列度"
+  },
+  "action": { "preview": "プレビュー", "sync": "同期実行" }
+}
