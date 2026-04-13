@@ -12,30 +12,76 @@ let tmpRoot: string;
 let libraryDir: string;
 let sourceFile: string;
 
+/**
+ * orchestrator 統合テストの共通 mockEagle 呼び出し。
+ * folder/smartFolder は mockEagle のデフォルトに含まれていないため、
+ * 各テストでこのヘルパー経由で必ず stub を注入する。
+ */
+function setupEagleMock(opts?: {
+  items?: Array<{
+    id: string;
+    name: string;
+    ext: string;
+    filePath: string;
+    tags: string[];
+    folders: string[];
+  }>;
+  folders?: Array<{
+    id: string;
+    name: string;
+    parent: string | null;
+    children: unknown[];
+  }>;
+  smartFolders?: Array<{
+    id: string;
+    name: string;
+    parent: string | null;
+    children: unknown[];
+    getItems?: ReturnType<typeof vi.fn>;
+  }>;
+  locale?: string;
+}) {
+  mockEagle({
+    item: {
+      getAll: vi.fn(),
+      getSelected: vi.fn(),
+      get: vi.fn().mockResolvedValue(opts?.items ?? []),
+      getById: vi.fn(),
+      getByIds: vi.fn()
+    } as unknown as Eagle.EagleAPI['item'],
+    folder: {
+      getAll: vi.fn().mockResolvedValue(opts?.folders ?? [])
+    } as unknown as Eagle.EagleAPI['folder'],
+    smartFolder: {
+      getAll: vi.fn().mockResolvedValue(opts?.smartFolders ?? [])
+    } as unknown as Eagle.EagleAPI['smartFolder'],
+    library: { path: libraryDir, name: 'test', info: vi.fn() },
+    app: {
+      theme: 'LIGHT',
+      locale: opts?.locale ?? 'en_US',
+      isDarkColors: () => false
+    } as unknown as Eagle.App
+  });
+}
+
 beforeEach(async () => {
   tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tagfolders-orch-'));
   libraryDir = path.join(tmpRoot, 'library');
   await fs.mkdir(libraryDir);
   sourceFile = path.join(libraryDir, 'src.txt');
   await fs.writeFile(sourceFile, 'hello');
-  mockEagle({
-    item: {
-      getAll: vi.fn(),
-      getSelected: vi.fn(),
-      get: vi.fn().mockResolvedValue([
-        {
-          id: 'i1',
-          name: 'photo',
-          ext: 'txt',
-          filePath: sourceFile,
-          tags: ['sky'],
-          folders: []
-        }
-      ]),
-      getById: vi.fn(),
-      getByIds: vi.fn()
-    } as unknown as Eagle.EagleAPI['item'],
-    library: { path: libraryDir, name: 'test', info: vi.fn() }
+  setupEagleMock({
+    items: [
+      {
+        id: 'i1',
+        name: 'photo',
+        ext: 'txt',
+        filePath: sourceFile,
+        tags: ['sky'],
+        folders: ['F1']
+      }
+    ],
+    folders: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }]
   });
 });
 
@@ -58,7 +104,7 @@ describe('validatePrerequisites', () => {
 });
 
 describe('orchestrator E2E', () => {
-  it('buildPlan → execute で managedDir にリンクが作られる', async () => {
+  it('buildPlan → execute で managedDir にフォルダ階層配下のリンクが作られる', async () => {
     const rootDir = path.join(tmpRoot, 'out');
     await fs.mkdir(rootDir);
     const settings = { ...DEFAULT_SETTINGS, rootDir };
@@ -67,11 +113,12 @@ describe('orchestrator E2E', () => {
       const result = await execute(plans, settings, {});
       expect(result.success).toBe(true);
       expect(result.rolledBack).toBe(false);
-      const target = path.join(rootDir, MANAGED_SUBDIR, 'sky', 'photo.txt');
+      const target = path.join(rootDir, MANAGED_SUBDIR, 'folders', 'Folder 1', 'photo.txt');
       const content = await fs.readFile(target, 'utf8');
       expect(content).toBe('hello');
-    } catch (e: any) {
-      if (e?.code === 'EPERM') return;
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err?.code === 'EPERM') return;
       throw e;
     }
   });
@@ -85,9 +132,149 @@ describe('orchestrator E2E', () => {
     try {
       await execute(plans, settings, { onPhaseChange: (p) => phases.push(p) });
       expect(phases).toEqual(['validate', 'write', 'swap', 'done']);
-    } catch (e: any) {
-      if (e?.code === 'EPERM') return;
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err?.code === 'EPERM') return;
       throw e;
     }
+  });
+});
+
+describe('buildPlan カテゴリ別の挙動', () => {
+  it('categories.folders=true でフォルダ階層が plan に反映される', async () => {
+    setupEagleMock({
+      items: [
+        {
+          id: 'i1',
+          name: 'photo',
+          ext: 'txt',
+          filePath: sourceFile,
+          tags: [],
+          folders: ['F1']
+        }
+      ],
+      folders: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }]
+    });
+    const rootDir = path.join(tmpRoot, 'fold-test');
+    await fs.mkdir(rootDir);
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      rootDir,
+      categories: {
+        folders: true,
+        smartFolders: false,
+        all: false,
+        untagged: false,
+        uncategorized: false
+      }
+    };
+    const { plans, summary } = await buildPlan(settings);
+    expect(plans).toHaveLength(1);
+    expect(plans[0]!.destDir).toBe('folders/Folder 1');
+    expect(summary.folderCount).toBe(1);
+  });
+
+  it('categories.all=true で all/ 配下にフラット配置される', async () => {
+    setupEagleMock({
+      items: [
+        {
+          id: 'i1',
+          name: 'a',
+          ext: 'txt',
+          filePath: sourceFile,
+          tags: [],
+          folders: []
+        },
+        {
+          id: 'i2',
+          name: 'b',
+          ext: 'txt',
+          filePath: sourceFile,
+          tags: ['x'],
+          folders: ['F1']
+        }
+      ],
+      folders: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }]
+    });
+    const rootDir = path.join(tmpRoot, 'all-test');
+    await fs.mkdir(rootDir);
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      rootDir,
+      categories: {
+        folders: false,
+        smartFolders: false,
+        all: true,
+        untagged: false,
+        uncategorized: false
+      }
+    };
+    const { plans } = await buildPlan(settings);
+    expect(plans).toHaveLength(2);
+    expect(new Set(plans.map((p) => p.destDir))).toEqual(new Set(['all']));
+  });
+
+  it('excludedFolderIds で該当フォルダのアイテムが出力から外れる', async () => {
+    setupEagleMock({
+      items: [],
+      folders: [
+        {
+          id: 'F1',
+          name: 'Folder 1',
+          parent: null,
+          children: [{ id: 'F2', name: 'Folder 2', parent: 'F1', children: [] }]
+        }
+      ]
+    });
+    const rootDir = path.join(tmpRoot, 'excl-test');
+    await fs.mkdir(rootDir);
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      rootDir,
+      categories: {
+        folders: true,
+        smartFolders: false,
+        all: false,
+        untagged: false,
+        uncategorized: false
+      },
+      excludedFolderIds: ['F1']
+    };
+    const { plans, summary } = await buildPlan(settings);
+    expect(plans).toHaveLength(0);
+    expect(summary.excludedFolderCount).toBe(2);
+  });
+
+  it("eagle.app.locale='ja_JP' でディレクトリ名が日本語になる", async () => {
+    setupEagleMock({
+      items: [
+        {
+          id: 'i1',
+          name: 'photo',
+          ext: 'txt',
+          filePath: sourceFile,
+          tags: [],
+          folders: ['F1']
+        }
+      ],
+      folders: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }],
+      locale: 'ja_JP'
+    });
+    const rootDir = path.join(tmpRoot, 'ja-test');
+    await fs.mkdir(rootDir);
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      rootDir,
+      categories: {
+        folders: true,
+        smartFolders: false,
+        all: false,
+        untagged: false,
+        uncategorized: false
+      }
+    };
+    const { plans } = await buildPlan(settings);
+    expect(plans).toHaveLength(1);
+    expect(plans[0]!.destDir.startsWith('フォルダ/')).toBe(true);
   });
 });

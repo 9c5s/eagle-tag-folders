@@ -150,7 +150,7 @@ export async function needsConsent(paths: ResolvedPaths): Promise<boolean> {
 }
 
 /**
- * Eagle アイテムとタググループからシンボリックリンク計画を構築する。
+ * Eagle のフォルダ / スマートフォルダおよびカテゴリ設定からシンボリックリンク計画を構築する。
  * @param settings ユーザー設定
  * @param callbacks フェーズ変化コールバック (省略可)
  * @returns 計画サマリと計画配列
@@ -160,17 +160,11 @@ export async function buildPlan(
   callbacks?: BuildPlanCallbacks
 ): Promise<{ summary: PlanSummary; plans: SymlinkPlan[] }> {
   callbacks?.onPhaseChange?.('collect');
-  const { items, tagGroups, excludedCount } = await collectItems(settings.excludeTags);
+  const collect = await collectItems(settings);
   callbacks?.onPhaseChange?.('plan');
   const managedDir = settings.rootDir !== null ? path.join(settings.rootDir, MANAGED_SUBDIR) : '';
-  const { plans, summary } = buildSyncPlan(
-    items,
-    tagGroups,
-    settings,
-    managedDir,
-    process.platform
-  );
-  summary.excludedItemCount = excludedCount;
+  const locale = eagle.app.locale ?? 'en';
+  const { plans, summary } = buildSyncPlan(collect, settings, managedDir, process.platform, locale);
   callbacks?.onPhaseChange?.('done');
   return { summary, plans };
 }

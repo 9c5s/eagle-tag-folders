@@ -112,3 +112,25 @@ export type ExecutionCallbacks = {
   onError?: (error: SyncError) => void;
   onPhaseChange?: (phase: ExecutionPhase) => void;
 };
+
+export type EagleFolderNode = {
+  id: string;
+  name: string;
+  parent: string | null;
+  children: EagleFolderNode[];
+};
+
+export type EagleSmartFolderNode = {
+  id: string;
+  name: string;
+  parent: string | null;
+  children: EagleSmartFolderNode[];
+};
+
+export type CollectResult = {
+  items: EagleItem[];
+  folderTree: EagleFolderNode[];
+  smartFolderTree: EagleSmartFolderNode[];
+  sfItemsCache: Map<string, EagleItem[]>;
+  uncategorizedItems: EagleItem[];
+};

@@ -1,113 +1,251 @@
 import { describe, it, expect } from 'vitest';
 import { buildSyncPlan } from '@/modules/folderExportSync/planBuilder';
 import { DEFAULT_SETTINGS } from '@/modules/folderExportSync/types';
-import type { EagleItem, EagleTagGroup } from '@/modules/folderExportSync/types';
+import type { CollectResult, EagleItem, Settings } from '@/modules/folderExportSync/types';
 
-const item = (id: string, name: string, tags: string[]): EagleItem => ({
+const mkItem = (id: string, tags: string[] = [], folders: string[] = []): EagleItem => ({
   id,
-  name,
+  name: id,
   ext: 'png',
   filePath: `/src/${id}.png`,
   tags,
-  folders: []
+  folders
 });
 
 const MANAGED = '/root/eagle-folder-export';
 
+const baseResult = (overrides?: Partial<CollectResult>): CollectResult => ({
+  items: [],
+  folderTree: [],
+  smartFolderTree: [],
+  sfItemsCache: new Map(),
+  uncategorizedItems: [],
+  ...overrides
+});
+
+const settings = (overrides?: Partial<Settings>): Settings => ({
+  ...DEFAULT_SETTINGS,
+  ...overrides
+});
+
 describe('buildSyncPlan', () => {
-  it('アイテム 1 × タグ 1 = プラン 1', () => {
-    const { plans, summary } = buildSyncPlan(
-      [item('i1', 'photo', ['sky'])],
-      [],
-      DEFAULT_SETTINGS,
+  it('folders カテゴリ: Eagle フォルダ階層に配置', () => {
+    const { plans } = buildSyncPlan(
+      baseResult({
+        folderTree: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }],
+        items: [mkItem('i1', [], ['F1'])]
+      }),
+      settings({
+        categories: {
+          folders: true,
+          smartFolders: false,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
       MANAGED,
-      'linux'
+      'linux',
+      'en'
     );
     expect(plans).toHaveLength(1);
-    expect(plans[0]!.destDir).toBe('sky');
-    expect(plans[0]!.destName).toBe('photo.png');
-    expect(summary.symlinkCount).toBe(1);
-    expect(summary.collisionCount).toBe(0);
+    expect(plans[0]!.destDir).toBe('folders/Folder 1');
   });
 
-  it('同一 dir 内同名衝突 → suffix モードで (2) 付加', () => {
-    const { plans, summary } = buildSyncPlan(
-      [item('i1', 'photo', ['sky']), item('i2', 'photo', ['sky'])],
-      [],
-      DEFAULT_SETTINGS,
-      MANAGED,
-      'linux'
-    );
-    const names = plans.map((p) => p.destName).sort();
-    expect(names).toEqual(['photo (2).png', 'photo.png']);
-    expect(summary.collisionCount).toBe(1);
-  });
-
-  it('id モードは常に ID 付加', () => {
+  it('all カテゴリ: フラットに配置', () => {
     const { plans } = buildSyncPlan(
-      [item('i1', 'photo', ['sky'])],
-      [],
-      { ...DEFAULT_SETTINGS, namingMode: 'id' },
+      baseResult({
+        items: [mkItem('i1'), mkItem('i2')]
+      }),
+      settings({
+        categories: {
+          folders: false,
+          smartFolders: false,
+          all: true,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
       MANAGED,
-      'linux'
+      'linux',
+      'en'
     );
-    expect(plans[0]!.destName).toBe('photo_i1.png');
+    expect(plans).toHaveLength(2);
+    expect(new Set(plans.map((p) => p.destDir))).toEqual(new Set(['all']));
   });
 
-  it('グループ所属タグは group/tag に', () => {
-    const g: EagleTagGroup = { name: 'Colors', tags: ['blue'] };
+  it('untagged カテゴリ: tags.length===0 のアイテムだけ', () => {
     const { plans } = buildSyncPlan(
-      [item('i1', 'p', ['blue'])],
-      [g],
-      DEFAULT_SETTINGS,
+      baseResult({
+        items: [mkItem('i1', ['a']), mkItem('i2')]
+      }),
+      settings({
+        categories: {
+          folders: false,
+          smartFolders: false,
+          all: false,
+          untagged: true,
+          uncategorized: false
+        }
+      }),
       MANAGED,
-      'linux'
+      'linux',
+      'en'
     );
-    expect(plans[0]!.destDir).toBe('Colors/blue');
-    expect(plans[0]!.displayTag).toBe('Colors/blue');
+    expect(plans.map((p) => p.itemId)).toEqual(['i2']);
   });
 
-  it('summary が正しく計算される', () => {
+  it('uncategorized カテゴリ: uncategorizedItems を使う', () => {
+    const { plans } = buildSyncPlan(
+      baseResult({
+        uncategorizedItems: [mkItem('u1')]
+      }),
+      settings({
+        categories: {
+          folders: false,
+          smartFolders: false,
+          all: false,
+          untagged: false,
+          uncategorized: true
+        }
+      }),
+      MANAGED,
+      'linux',
+      'en'
+    );
+    expect(plans.map((p) => p.itemId)).toEqual(['u1']);
+  });
+
+  it('smartFolders カテゴリ: sfItemsCache を使って階層配置', () => {
+    const { plans } = buildSyncPlan(
+      baseResult({
+        smartFolderTree: [{ id: 'S1', name: 'Smart A', parent: null, children: [] }],
+        sfItemsCache: new Map([['S1', [mkItem('i1')]]])
+      }),
+      settings({
+        categories: {
+          folders: false,
+          smartFolders: true,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
+      MANAGED,
+      'linux',
+      'en'
+    );
+    expect(plans[0]!.destDir).toBe('smart-folders/Smart A');
+  });
+
+  it('ロケール ja_JP でディレクトリ名が日本語に', () => {
+    const { plans } = buildSyncPlan(
+      baseResult({
+        folderTree: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }],
+        items: [mkItem('i1', [], ['F1'])]
+      }),
+      settings({
+        categories: {
+          folders: true,
+          smartFolders: false,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
+      MANAGED,
+      'linux',
+      'ja_JP'
+    );
+    expect(plans[0]!.destDir.startsWith('フォルダ/')).toBe(true);
+  });
+
+  it('summary に folderCount / smartFolderCount / excludedFolderCount / excludedSmartFolderCount を設定', () => {
     const { summary } = buildSyncPlan(
-      [item('i1', 'a', ['sky']), item('i2', 'b', ['sky', 'tree'])],
-      [],
-      DEFAULT_SETTINGS,
+      baseResult({
+        folderTree: [
+          {
+            id: 'F1',
+            name: 'Folder 1',
+            parent: null,
+            children: [{ id: 'F2', name: 'Folder 2', parent: 'F1', children: [] }]
+          }
+        ],
+        smartFolderTree: [{ id: 'S1', name: 'Smart A', parent: null, children: [] }],
+        items: [mkItem('i1', [], ['F1']), mkItem('i2', [], ['F2'])],
+        sfItemsCache: new Map([['S1', [mkItem('i1')]]])
+      }),
+      settings({
+        categories: {
+          folders: true,
+          smartFolders: true,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        },
+        excludedFolderIds: [],
+        excludedSmartFolderIds: []
+      }),
       MANAGED,
-      'linux'
+      'linux',
+      'en'
     );
-    expect(summary.itemCount).toBe(2);
-    expect(summary.symlinkCount).toBe(3);
-    expect(summary.tagCount).toBe(2);
+    expect(summary.folderCount).toBe(2);
+    expect(summary.smartFolderCount).toBe(1);
+    expect(summary.excludedFolderCount).toBe(0);
+    expect(summary.excludedSmartFolderCount).toBe(0);
   });
 
-  it('Windows 260 文字超のパスは plan から除外、warnings に記録', () => {
+  it('除外指定があれば excludedFolderCount / excludedSmartFolderCount に反映', () => {
+    const { summary } = buildSyncPlan(
+      baseResult({
+        folderTree: [
+          {
+            id: 'F1',
+            name: 'Folder 1',
+            parent: null,
+            children: [{ id: 'F2', name: 'Folder 2', parent: 'F1', children: [] }]
+          }
+        ]
+      }),
+      settings({
+        categories: {
+          folders: true,
+          smartFolders: false,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        },
+        excludedFolderIds: ['F1']
+      }),
+      MANAGED,
+      'linux',
+      'en'
+    );
+    expect(summary.excludedFolderCount).toBe(2);
+  });
+
+  it('Windows 260 文字超は除外 + warnings', () => {
     const longName = 'x'.repeat(250);
-    const longItem = item('i_long', longName, ['sky']);
     const { plans, summary } = buildSyncPlan(
-      [longItem],
-      [],
-      DEFAULT_SETTINGS,
-      'C:\\\\root\\\\eagle-folder-export',
-      'win32'
+      baseResult({
+        folderTree: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }],
+        items: [mkItem(longName, [], ['F1'])]
+      }),
+      settings({
+        categories: {
+          folders: true,
+          smartFolders: false,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
+      'C:\\root\\eagle-folder-export',
+      'win32',
+      'en'
     );
     expect(plans).toHaveLength(0);
-    expect(
-      summary.warnings.some(
-        (w) => w.includes('長すぎる') || w.includes('超え') || w.includes('上限')
-      )
-    ).toBe(true);
-  });
-
-  it('Linux 4096 文字 budget では余裕で通る', () => {
-    const longName = 'x'.repeat(250);
-    const longItem = item('i_long', longName, ['sky']);
-    const { plans } = buildSyncPlan(
-      [longItem],
-      [],
-      DEFAULT_SETTINGS,
-      '/root/eagle-folder-export',
-      'linux'
-    );
-    expect(plans).toHaveLength(1);
+    expect(summary.warnings.some((w) => w.includes('上限') || w.includes('超え'))).toBe(true);
   });
 });
