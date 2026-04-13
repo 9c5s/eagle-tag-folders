@@ -49,6 +49,11 @@ describe('writeMarker / isManaged', () => {
   it('isManaged は MARKER が無ければ false', async () => {
     expect(await isManaged(tmp)).toBe(false);
   });
+
+  it('isManaged は壊れた JSON なら false', async () => {
+    await fs.writeFile(path.join(tmp, MARKER_FILE), '{{broken');
+    expect(await isManaged(tmp)).toBe(false);
+  });
 });
 
 describe('assertNotReparsePoint', () => {
