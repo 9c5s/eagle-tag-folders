@@ -46,7 +46,8 @@
 
 - [ ] Windows 開発者モード無効で同期 → probe で EPERM → DevModeWarningDialog
 - [ ] 書き込み不可の rootDir を指定 → fatal
-- [ ] rootDir を未設定で同期 → ガード
+- [ ] rootDir 未設定: プレビュー / 同期実行ボタンが共に非活性 (`opacity 0.5`) で押下できない
+- [ ] rootDir 選択直後にプレビューボタンが活性化する (同期実行はプレビュー成功後に活性化)
 - [ ] rootDir がシンボリックリンク → 拒否
 - [ ] rootDir が home 直下 → 拒否
 - [ ] rootDir が Eagle ライブラリと包含 → 拒否

@@ -1,15 +1,21 @@
 <script setup lang="ts">
+import { computed, inject } from 'vue';
 import RootDirSetting from './RootDirSetting.vue';
 import CategoryTogglesSetting from './CategoryTogglesSetting.vue';
 import ExcludedFolderTreeSetting from './ExcludedFolderTreeSetting.vue';
 import ExcludedSmartFolderTreeSetting from './ExcludedSmartFolderTreeSetting.vue';
 import NamingModeSetting from './NamingModeSetting.vue';
 import CleanupOldDirsButton from './CleanupOldDirsButton.vue';
+import type { Settings } from '@/modules/folderExportSync';
 import { useSyncState } from '@/composables/useSyncState';
 import { useSync } from '@/composables/useSync';
 
+const settings = inject<Settings>('settings')!;
 const { state } = useSyncState();
 const { triggerPreview, triggerSync } = useSync();
+
+// rootDir 未設定の状態ではプレビューも同期実行も意味を成さないため両ボタンを抑止する
+const isRootDirUnset = computed(() => settings.rootDir === null);
 
 // Eagle プラグインマニフェストからタイトルを取得する
 const title =
@@ -42,7 +48,7 @@ const title =
       <el-button
         type="primary"
         class="btn-preview"
-        :disabled="state === 'Syncing'"
+        :disabled="state === 'Syncing' || isRootDirUnset"
         @click="triggerPreview"
       >
         プレビュー
@@ -50,7 +56,7 @@ const title =
       <el-button
         type="primary"
         class="btn-sync"
-        :disabled="state !== 'Preview'"
+        :disabled="state !== 'Preview' || isRootDirUnset"
         @click="triggerSync"
       >
         同期実行
