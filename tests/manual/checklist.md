@@ -28,7 +28,7 @@
 - [ ] Eagle ロケール `ja` / `en` 切替でディレクトリ名が変わる (`フォルダ/` vs `folders/` 等)
 - [ ] Eagle build21 以下 (dev eagleMock で `eagle.app.build = 21` 注入 or Eagle 旧版起動) で起動すると以下を全て満たす:
   - `UnsupportedScreen` が画面全体に表示される
-  - `MainPanel` / 設定サイドバー / プレビューパネル / 同期ボタン / `CleanupOldDirsButton` 等の通常 UI が一切 render されない
+  - `MainPanel` / 設定サイドバー / プレビューパネル / 同期ボタン等の通常 UI が一切 render されない
   - プレビューや同期を走らせる手段が存在せず、ユーザーが取れる操作はウィンドウを閉じるのみ
 
 ## 実機検証項目 (spec §13 由来)
@@ -69,7 +69,6 @@
 
 - [ ] テーマ変更 (Eagle 設定から) → プラグインに即反映
 - [ ] esc でウィンドウ閉じる、同期中は ExitConfirmDialog
-- [ ] 旧バージョンを削除 → cleanupOldDirs が動く
 
 ### デザイン回帰 (Custom Export 風リファイン後)
 
@@ -79,7 +78,6 @@
 - [ ] RootDirSetting: 長い絶対パス (`C:\Users\...\very\deep\path`) を指定しても 1 行にトリミングされ、ホバーで tooltip が全体を表示する
 - [ ] CategoryToggleSetting: 5 つのスイッチ (folders / smartFolders / all / untagged / uncategorized) が縦並びで、トグル時に PlanSummary に即反映される
 - [ ] ExcludedFoldersSetting / ExcludedSmartFoldersSetting: ツリーから複数選択でき、選択中の枝が `folders/` / `smart-folders/` から消えることがプレビューで確認できる
-- [ ] CleanupOldDirsButton: フル幅、クリックで `ElMessageBox.confirm` が el-dialog と同寸で開く
 - [ ] MainPanel: 各パネル (プレビュー / 進捗 / 結果) が border + border-radius 8px + padding 16px で統一
 - [ ] SyncProgressPanel: `<el-progress>` のバーが primary 色、高さ 2px
 - [ ] SyncResultPanel: エラー詳細の toggle が `<el-button text size="small">` で目立たない

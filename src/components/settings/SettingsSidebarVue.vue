@@ -4,7 +4,6 @@ import RootDirSetting from './RootDirSetting.vue';
 import CategoryTogglesSetting from './CategoryTogglesSetting.vue';
 import ExcludedFolderTreeSetting from './ExcludedFolderTreeSetting.vue';
 import ExcludedSmartFolderTreeSetting from './ExcludedSmartFolderTreeSetting.vue';
-import CleanupOldDirsButton from './CleanupOldDirsButton.vue';
 import type { Settings } from '@/modules/folderExportSync';
 import { useSyncState } from '@/composables/useSyncState';
 import { useSync } from '@/composables/useSync';
@@ -38,8 +37,6 @@ const title =
       <ExcludedFolderTreeSetting />
       <div class="divider" />
       <ExcludedSmartFolderTreeSetting />
-      <div class="divider" />
-      <CleanupOldDirsButton />
     </div>
     <div class="actions">
       <el-button
@@ -48,7 +45,7 @@ const title =
         :disabled="state === 'Syncing' || isRootDirUnset"
         @click="triggerPreview"
       >
-        プレビュー
+        {{ $translate('action.preview', 'プレビュー') }}
       </el-button>
       <el-button
         type="primary"
@@ -56,7 +53,7 @@ const title =
         :disabled="state !== 'Preview' || isRootDirUnset"
         @click="triggerSync"
       >
-        同期実行
+        {{ $translate('action.export', 'エクスポート') }}
       </el-button>
     </div>
   </div>

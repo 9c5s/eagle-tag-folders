@@ -32,5 +32,5 @@
     "title": "このプラグインを起動できません",
     "message": "Eagle 4.0 build22 以降が必要です"
   },
-  "action": { "preview": "プレビュー", "sync": "同期実行" }
+  "action": { "preview": "プレビュー", "export": "エクスポート" }
 }

@@ -72,6 +72,13 @@
         --background-mix-color: var(--color-black-5);
       }
     }
+    // small サイズ: 補助的なボタン (最新読み込み / purge / 詳細トグル / フォルダ選択) 用に一段階下げる
+    &.el-button--small {
+      height: 28px;
+      line-height: 28px;
+      font-size: var(--font-size-sm);
+      padding: 0 12px;
+    }
     // disabled狀態
     &.is-disabled {
       --border-color: var(--color-border-primary);

@@ -32,5 +32,5 @@
     "title": "Cannot launch this plugin",
     "message": "Eagle 4.0 build22 or later is required"
   },
-  "action": { "preview": "Preview", "sync": "Sync" }
+  "action": { "preview": "Preview", "export": "Export" }
 }
