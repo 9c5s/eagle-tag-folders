@@ -19,7 +19,7 @@ const items: Array<{ key: CategoryKey; label: string }> = [
     <div class="toggle-list">
       <div v-for="it in items" :key="it.key" class="toggle-row">
         <el-switch v-model="settings.categories[it.key]" />
-        <span>{{ it.label }}</span>
+        <span class="toggle-row__label">{{ it.label }}</span>
       </div>
     </div>
   </SettingsSection>
@@ -35,5 +35,10 @@ const items: Array<{ key: CategoryKey; label: string }> = [
   display: flex;
   align-items: center;
   gap: 10px;
+}
+.toggle-row__label {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: 1.4;
 }
 </style>

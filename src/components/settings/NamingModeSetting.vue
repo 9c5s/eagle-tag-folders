@@ -21,5 +21,11 @@ const settings = inject<Settings>('settings')!;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
+
+  // ラベルは _el-radio.scss の override でも base 指定済みだが、トレース容易性の
+  // ためコンポーネント側でも明示する
+  :deep(.el-radio__label) {
+    font-size: var(--font-size-base);
+  }
 }
 </style>
