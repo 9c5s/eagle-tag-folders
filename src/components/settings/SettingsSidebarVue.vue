@@ -4,7 +4,6 @@ import RootDirSetting from './RootDirSetting.vue';
 import CategoryTogglesSetting from './CategoryTogglesSetting.vue';
 import ExcludedFolderTreeSetting from './ExcludedFolderTreeSetting.vue';
 import ExcludedSmartFolderTreeSetting from './ExcludedSmartFolderTreeSetting.vue';
-import NamingModeSetting from './NamingModeSetting.vue';
 import CleanupOldDirsButton from './CleanupOldDirsButton.vue';
 import type { Settings } from '@/modules/folderExportSync';
 import { useSyncState } from '@/composables/useSyncState';
@@ -39,8 +38,6 @@ const title =
       <ExcludedFolderTreeSetting />
       <div class="divider" />
       <ExcludedSmartFolderTreeSetting />
-      <div class="divider" />
-      <NamingModeSetting />
       <div class="divider" />
       <CleanupOldDirsButton />
     </div>

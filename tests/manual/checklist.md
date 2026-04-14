@@ -79,7 +79,6 @@
 - [ ] RootDirSetting: 長い絶対パス (`C:\Users\...\very\deep\path`) を指定しても 1 行にトリミングされ、ホバーで tooltip が全体を表示する
 - [ ] CategoryToggleSetting: 5 つのスイッチ (folders / smartFolders / all / untagged / uncategorized) が縦並びで、トグル時に PlanSummary に即反映される
 - [ ] ExcludedFoldersSetting / ExcludedSmartFoldersSetting: ツリーから複数選択でき、選択中の枝が `folders/` / `smart-folders/` から消えることがプレビューで確認できる
-- [ ] NamingModeSetting: ラジオが 2 つ、チェック済みは primary 色、未チェックは透明
 - [ ] CleanupOldDirsButton: フル幅、クリックで `ElMessageBox.confirm` が el-dialog と同寸で開く
 - [ ] MainPanel: 各パネル (プレビュー / 進捗 / 結果) が border + border-radius 8px + padding 16px で統一
 - [ ] SyncProgressPanel: `<el-progress>` のバーが primary 色、高さ 2px
