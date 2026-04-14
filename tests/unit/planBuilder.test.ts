@@ -52,6 +52,43 @@ describe('buildSyncPlan', () => {
     expect(plans[0]!.destDir).toBe('folders/Folder 1');
   });
 
+  it('同じ item を同じ dir に置こうとする pair の重複は 1 plan に圧縮する', () => {
+    // smartFolder tree が flat 化されて同名 node が複数並ぶケースを再現する。
+    // ここでは独立 "mov" と "type" 配下の子 "mov" がどちらも root 直下の flat
+    // list として返り、同じ item が両方に matching したと仮定する。
+    const flatTree = [
+      { id: 'S_mov', name: 'mov', parent: null, children: [] },
+      { id: 'S_type_mov', name: 'mov', parent: null, children: [] }
+    ];
+    const item = mkItem('shared');
+    const cache = new Map<string, EagleItem[]>([
+      ['S_mov', [item]],
+      ['S_type_mov', [item]]
+    ]);
+    const { plans } = buildSyncPlan(
+      baseResult({
+        smartFolderTree: flatTree,
+        sfItemsCache: cache
+      }),
+      settings({
+        categories: {
+          folders: false,
+          smartFolders: true,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
+      MANAGED,
+      'linux',
+      'en'
+    );
+    // (item, dir) が完全一致する pair は重複排除されて 1 plan のみ
+    const movPlans = plans.filter((p) => p.destDir === 'smart-folders/mov');
+    expect(movPlans).toHaveLength(1);
+    expect(movPlans[0]!.destName).toBe('shared.png');
+  });
+
   it('item.filePath が undefined のアイテムは plan から除外し warnings に記録する', () => {
     const broken: EagleItem = {
       id: 'broken',

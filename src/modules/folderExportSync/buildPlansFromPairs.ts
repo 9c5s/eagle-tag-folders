@@ -35,7 +35,19 @@ export function buildPlansFromPairs(
   let pathExceededCount = 0;
   let missingFilePathCount = 0;
 
+  // (item.id, dir) が完全一致する pair の重複を除外する。
+  // smartFolder tree で同名 node が flat に並ぶ等の理由で同じ symlink が
+  // 二重に計画されると writer 側で EEXIST で skip されるため、入口で吸収する。
+  const seenPair = new Set<string>();
+  const dedupedPairs: ItemDirPair[] = [];
   for (const pair of pairs) {
+    const key = `${pair.item.id}\u0000${pair.dir.join('\u0000')}`;
+    if (seenPair.has(key)) continue;
+    seenPair.add(key);
+    dedupedPairs.push(pair);
+  }
+
+  for (const pair of dedupedPairs) {
     // Eagle API 側で filePath を欠落させて返すアイテムがある (例: 一部の smartFolder.getItems)。
     // 型宣言では string だが実体は undefined になりうるため、symlink 作成前にここで除外する。
     if (typeof pair.item.filePath !== 'string' || pair.item.filePath.length === 0) {
