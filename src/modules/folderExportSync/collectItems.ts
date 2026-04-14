@@ -23,9 +23,19 @@ type RawSmartFolder = {
   getItems: (opts?: { fields?: string[] }) => Promise<Array<{ id: string }>>;
 };
 
-// Eagle API の fields オプションは plain object 返却で filePath の read-only
-// プロパティ (getter) が欠落する挙動が観測されたため指定せずに Item インスタンスを
-// 丸ごと受け取る。performance より正確性を優先する。
+type RawItem = {
+  id: string;
+  name: string;
+  ext: string;
+  filePath: string;
+  tags: string[];
+  folders: string[];
+};
+
+// Eagle API に folders/isUntagged/isUnfiled/fields のフィルタを渡すと plain
+// object で返され、read-only getter の filePath が欠落するバグが観測された。
+// 正確性のためフィルタも fields も一切指定せず、全件を Item インスタンスとして
+// 受け取り、クライアント側で folders / tags 判定を行う。
 function mapFolder<T extends { id: string; name: string; parent: string | null; children: T[] }>(
   node: T
 ): EagleFolderNode {
@@ -72,14 +82,7 @@ function flattenNodes<T extends { children: T[] }>(tree: T[]): T[] {
   return out;
 }
 
-function toItem(raw: {
-  id: string;
-  name: string;
-  ext: string;
-  filePath: string;
-  tags: string[];
-  folders: string[];
-}): EagleItem {
+function toItem(raw: RawItem): EagleItem {
   return {
     id: raw.id,
     name: raw.name,
@@ -92,8 +95,9 @@ function toItem(raw: {
 
 /**
  * カテゴリ設定に従って Eagle API を呼び、同期に必要なデータ一式を集める。
- * 不要な API 呼び出しは避け、sf.getItems() は smart-folders と uncategorized の
- * 両方が ON でも 1 回ずつしか呼ばない (sfItemsCache に載せて使い回す)。
+ * eagle.item.get は常に引数なしで呼び出し、クライアント側で folders/tags を
+ * もとにフィルタする。sf.getItems の返却は id 参照として扱い、filePath 等の
+ * 実体は全件キャッシュから補完する。
  */
 export async function collectItems(settings: Settings): Promise<CollectResult> {
   const rawFolderTree = (await eagle.folder.getAll()) as unknown as RawFolder[];
@@ -107,38 +111,39 @@ export async function collectItems(settings: Settings): Promise<CollectResult> {
     settings.excludedSmartFolderIds
   );
 
+  const allRaw = (await eagle.item.get({})) as unknown as RawItem[];
+  const itemById = new Map<string, RawItem>();
+  for (const r of allRaw) itemById.set(r.id, r);
+
   const itemsMap = new Map<string, EagleItem>();
   let unfiledItems: EagleItem[] = [];
 
-  const mergeItems = (raw: Array<Parameters<typeof toItem>[0]>) => {
+  const mergeItems = (raw: RawItem[]) => {
     for (const r of raw) {
       if (!itemsMap.has(r.id)) itemsMap.set(r.id, toItem(r));
     }
   };
 
   if (settings.categories.all) {
-    const raw = await eagle.item.get({});
-    mergeItems(raw as unknown as Array<Parameters<typeof toItem>[0]>);
+    mergeItems(allRaw);
   } else {
     if (settings.categories.folders) {
       const activeFolderIds = flattenIds(folderTree).filter((id) => !excludedFolderSet.has(id));
       if (activeFolderIds.length > 0) {
-        const raw = await eagle.item.get({ folders: activeFolderIds });
-        mergeItems(raw as unknown as Array<Parameters<typeof toItem>[0]>);
+        const activeSet = new Set(activeFolderIds);
+        mergeItems(allRaw.filter((r) => r.folders.some((fid) => activeSet.has(fid))));
       }
     }
     if (settings.categories.untagged) {
-      const raw = await eagle.item.get({ isUntagged: true });
-      mergeItems(raw as unknown as Array<Parameters<typeof toItem>[0]>);
+      mergeItems(allRaw.filter((r) => r.tags.length === 0));
     }
   }
 
   if (settings.categories.uncategorized) {
-    const raw = await eagle.item.get({ isUnfiled: true });
-    const list = (raw as unknown as Array<Parameters<typeof toItem>[0]>).map(toItem);
-    unfiledItems = list;
+    const unfiledRaw = allRaw.filter((r) => r.folders.length === 0);
+    unfiledItems = unfiledRaw.map(toItem);
     if (!settings.categories.all) {
-      mergeItems(raw as unknown as Array<Parameters<typeof toItem>[0]>);
+      mergeItems(unfiledRaw);
     }
   }
 
@@ -154,11 +159,13 @@ export async function collectItems(settings: Settings): Promise<CollectResult> {
       const batch = targets.slice(i, i + CONCURRENCY_SYMLINK);
       const batchResults = await Promise.all(
         batch.map(async (sf) => {
-          const raw = await sf.getItems();
-          return [
-            sf.id,
-            (raw as unknown as Array<Parameters<typeof toItem>[0]>).map(toItem)
-          ] as const;
+          const lightList = (await sf.getItems()) as unknown as Array<{ id: string }>;
+          const enriched: EagleItem[] = [];
+          for (const light of lightList) {
+            const full = itemById.get(light.id);
+            if (full !== undefined) enriched.push(toItem(full));
+          }
+          return [sf.id, enriched] as const;
         })
       );
       for (const [id, list] of batchResults) sfItemsCache.set(id, list);
