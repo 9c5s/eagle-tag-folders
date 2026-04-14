@@ -37,7 +37,7 @@ beforeEach(() => {
 });
 
 describe('collectItems', () => {
-  it('all ON なら get({fields}) で全件一括取得する', async () => {
+  it('all ON なら get() で全件一括取得する (fields 指定なし: filePath getter を有効化するため)', async () => {
     const get = vi.fn().mockResolvedValue([mkItem('i1', [], ['F1'])]);
     (globalThis as unknown as { eagle: Eagle.EagleAPI }).eagle.item.get =
       get as unknown as Eagle.EagleAPI['item']['get'];
@@ -45,18 +45,18 @@ describe('collectItems', () => {
       settings({ categories: { ...DEFAULT_SETTINGS.categories, all: true } })
     );
     expect(result.items).toHaveLength(1);
-    expect(get).toHaveBeenCalledWith({ fields: expect.any(Array) });
+    expect(get).toHaveBeenCalledWith({});
   });
 
-  it('all OFF + folders ON なら folders 指定で取得する', async () => {
+  it('all OFF + folders ON なら folders 指定で取得する (fields なし)', async () => {
     const get = vi.fn().mockResolvedValue([mkItem('i1', [], ['F1'])]);
     (globalThis as unknown as { eagle: Eagle.EagleAPI }).eagle.item.get =
       get as unknown as Eagle.EagleAPI['item']['get'];
     await collectItems(settings());
-    expect(get).toHaveBeenCalledWith({ folders: ['F1'], fields: expect.any(Array) });
+    expect(get).toHaveBeenCalledWith({ folders: ['F1'] });
   });
 
-  it('untagged ON なら isUntagged 取得を追加する', async () => {
+  it('untagged ON なら isUntagged 取得を追加する (fields なし)', async () => {
     const get = vi
       .fn()
       .mockResolvedValueOnce([mkItem('i1', ['a'], ['F1'])])
@@ -67,7 +67,7 @@ describe('collectItems', () => {
       settings({ categories: { ...DEFAULT_SETTINGS.categories, untagged: true } })
     );
     expect(r.items.map((i) => i.id).sort()).toEqual(['i1', 'i2']);
-    expect(get).toHaveBeenCalledWith({ isUntagged: true, fields: expect.any(Array) });
+    expect(get).toHaveBeenCalledWith({ isUntagged: true });
   });
 
   it('uncategorized ON なら isUnfiled 取得 + smartMatched 除外で判定', async () => {

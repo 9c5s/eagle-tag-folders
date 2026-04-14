@@ -23,8 +23,9 @@ type RawSmartFolder = {
   getItems: (opts?: { fields?: string[] }) => Promise<Array<{ id: string }>>;
 };
 
-const FIELDS = ['id', 'name', 'ext', 'filePath', 'tags', 'folders'] as const;
-
+// Eagle API の fields オプションは plain object 返却で filePath の read-only
+// プロパティ (getter) が欠落する挙動が観測されたため指定せずに Item インスタンスを
+// 丸ごと受け取る。performance より正確性を優先する。
 function mapFolder<T extends { id: string; name: string; parent: string | null; children: T[] }>(
   node: T
 ): EagleFolderNode {
@@ -116,24 +117,24 @@ export async function collectItems(settings: Settings): Promise<CollectResult> {
   };
 
   if (settings.categories.all) {
-    const raw = await eagle.item.get({ fields: [...FIELDS] });
+    const raw = await eagle.item.get({});
     mergeItems(raw as unknown as Array<Parameters<typeof toItem>[0]>);
   } else {
     if (settings.categories.folders) {
       const activeFolderIds = flattenIds(folderTree).filter((id) => !excludedFolderSet.has(id));
       if (activeFolderIds.length > 0) {
-        const raw = await eagle.item.get({ folders: activeFolderIds, fields: [...FIELDS] });
+        const raw = await eagle.item.get({ folders: activeFolderIds });
         mergeItems(raw as unknown as Array<Parameters<typeof toItem>[0]>);
       }
     }
     if (settings.categories.untagged) {
-      const raw = await eagle.item.get({ isUntagged: true, fields: [...FIELDS] });
+      const raw = await eagle.item.get({ isUntagged: true });
       mergeItems(raw as unknown as Array<Parameters<typeof toItem>[0]>);
     }
   }
 
   if (settings.categories.uncategorized) {
-    const raw = await eagle.item.get({ isUnfiled: true, fields: [...FIELDS] });
+    const raw = await eagle.item.get({ isUnfiled: true });
     const list = (raw as unknown as Array<Parameters<typeof toItem>[0]>).map(toItem);
     unfiledItems = list;
     if (!settings.categories.all) {
@@ -153,7 +154,7 @@ export async function collectItems(settings: Settings): Promise<CollectResult> {
       const batch = targets.slice(i, i + CONCURRENCY_SYMLINK);
       const batchResults = await Promise.all(
         batch.map(async (sf) => {
-          const raw = await sf.getItems({ fields: [...FIELDS] });
+          const raw = await sf.getItems();
           return [
             sf.id,
             (raw as unknown as Array<Parameters<typeof toItem>[0]>).map(toItem)
