@@ -1,4 +1,5 @@
 import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
 import type { ResolvedPaths } from './types';
 
 /**
@@ -29,6 +30,42 @@ export async function retryOnTransientFsError<T>(
 }
 
 /**
+ * from ディレクトリの中身を 1 エントリずつ to に move する。
+ * ディレクトリ丸ごと rename が Explorer の掴み等で EPERM 連続の場合の
+ * フォールバックとして使う。個別 rename はディレクトリ rename より通りやすい。
+ * atomicity は失われるが、体験を優先する。
+ */
+export async function moveDirectoryContents(from: string, to: string): Promise<void> {
+  await fs.mkdir(to, { recursive: true });
+  const entries = await fs.readdir(from, { withFileTypes: true });
+  for (const entry of entries) {
+    await retryOnTransientFsError(() =>
+      fs.rename(path.join(from, entry.name), path.join(to, entry.name))
+    );
+  }
+  // 空になった from を削除 (Explorer 掴みで失敗しても致命的ではないので無視)
+  await fs.rmdir(from).catch(() => {});
+}
+
+/**
+ * from → to の rename をまず試し、EPERM / EBUSY / EACCES が続く場合は
+ * 中身の個別 move にフォールバックする。Windows で Explorer が対象 dir を
+ * 開きっぱなしでも同期が完了するようにする。
+ */
+async function renameOrMoveContents(from: string, to: string): Promise<void> {
+  try {
+    await retryOnTransientFsError(() => fs.rename(from, to));
+    return;
+  } catch (err) {
+    const e = err as NodeJS.ErrnoException;
+    if (e?.code !== 'EPERM' && e?.code !== 'EBUSY' && e?.code !== 'EACCES') {
+      throw err;
+    }
+  }
+  await moveDirectoryContents(from, to);
+}
+
+/**
  * staging ディレクトリを managed ディレクトリにアトミックに入れ替える。
  * 既存の managed ディレクトリが存在する場合は oldDir に退避してからリネームする。
  * staging → managed のリネームに失敗した場合、退避した oldDir を managed に戻すロールバックを試みる。
@@ -45,17 +82,15 @@ export async function atomicSwap(paths: ResolvedPaths): Promise<{ oldDir: string
     .catch(() => false);
 
   if (managedExists) {
-    await retryOnTransientFsError(() => fs.rename(paths.managedDir, paths.oldDir));
+    await renameOrMoveContents(paths.managedDir, paths.oldDir);
     oldDir = paths.oldDir;
   }
 
   try {
-    await retryOnTransientFsError(() => fs.rename(paths.stagingDir, paths.managedDir));
+    await renameOrMoveContents(paths.stagingDir, paths.managedDir);
   } catch (err) {
     if (oldDir !== null) {
-      await retryOnTransientFsError(() => fs.rename(oldDir as string, paths.managedDir)).catch(
-        () => {}
-      );
+      await renameOrMoveContents(oldDir, paths.managedDir).catch(() => {});
     }
     throw err;
   }

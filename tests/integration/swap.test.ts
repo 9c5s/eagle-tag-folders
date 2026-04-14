@@ -26,6 +26,43 @@ afterEach(async () => {
   await fs.rm(tmpRoot, { recursive: true, force: true });
 });
 
+describe('moveDirectoryContents', () => {
+  it('from の中身を 1 エントリずつ to に移動し、from は削除される', async () => {
+    const { moveDirectoryContents } = await import('@/modules/folderExportSync/swap');
+    const from = path.join(tmpRoot, 'src-dir');
+    const to = path.join(tmpRoot, 'dst-dir');
+    await fs.mkdir(from, { recursive: true });
+    await fs.writeFile(path.join(from, 'a.txt'), 'A');
+    await fs.writeFile(path.join(from, 'b.txt'), 'B');
+    await fs.mkdir(path.join(from, 'sub'));
+    await fs.writeFile(path.join(from, 'sub', 'c.txt'), 'C');
+
+    await moveDirectoryContents(from, to);
+
+    expect(await fs.readFile(path.join(to, 'a.txt'), 'utf8')).toBe('A');
+    expect(await fs.readFile(path.join(to, 'b.txt'), 'utf8')).toBe('B');
+    expect(await fs.readFile(path.join(to, 'sub', 'c.txt'), 'utf8')).toBe('C');
+    // 元のディレクトリは削除される
+    const fromExists = await fs
+      .stat(from)
+      .then(() => true)
+      .catch(() => false);
+    expect(fromExists).toBe(false);
+  });
+
+  it('to が存在しなくても mkdir して移動する', async () => {
+    const { moveDirectoryContents } = await import('@/modules/folderExportSync/swap');
+    const from = path.join(tmpRoot, 'src2');
+    const to = path.join(tmpRoot, 'nested', 'dst2');
+    await fs.mkdir(from, { recursive: true });
+    await fs.writeFile(path.join(from, 'x.txt'), 'X');
+
+    await moveDirectoryContents(from, to);
+
+    expect(await fs.readFile(path.join(to, 'x.txt'), 'utf8')).toBe('X');
+  });
+});
+
 describe('retryOnTransientFsError', () => {
   it('EPERM を 1 回投げても 2 回目で成功すれば結果を返す', async () => {
     const { retryOnTransientFsError } = await import('@/modules/folderExportSync/swap');

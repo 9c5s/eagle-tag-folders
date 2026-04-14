@@ -61,12 +61,13 @@ buildPlan(settings, BuildPlanCallbacks)
    return { summary, plans }   ※ fs 書き込みゼロ
 
 execute(plans, settings, ExecutionCallbacks)
-   └─> validate (9 項目) → write (staging) → swap (atomic rename) → done
+   └─> validate (9 項目) → write (staging) → swap (atomic rename、失敗時は個別 move) → done
    return SyncResult (rolledBack / oldDir 含む)
 ```
 
 - `buildPlan` / `execute` は独立した公開 API。callback 契約も別 (`BuildPlanCallbacks` / `ExecutionCallbacks`)
 - `execute` は `try/catch/finally` でロールバック。`rolledBack: true` は **実際に復旧処理が成功した場合のみ**
+- swap は原則 `fs.rename` (atomic) だが、Windows で Explorer / Search / AV が掴んで EPERM/EBUSY/EACCES を返した場合は `moveDirectoryContents` (中身の個別 move) にフォールバックする。フォールバック時は atomicity が失われ、途中で失敗すると部分状態が残る trade-off ありだが、体験を優先
 - `SyncError.phase` は `collect | plan | write | swap | marker` (仕様書 2.1 準拠、`validate` は `marker` に統合)
 
 ## テスト方針
