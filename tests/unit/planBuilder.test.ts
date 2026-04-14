@@ -52,6 +52,39 @@ describe('buildSyncPlan', () => {
     expect(plans[0]!.destDir).toBe('folders/Folder 1');
   });
 
+  it('item.filePath が undefined のアイテムは plan から除外し warnings に記録する', () => {
+    const broken: EagleItem = {
+      id: 'broken',
+      name: 'broken',
+      ext: 'png',
+      // Eagle API の応答で filePath が欠落するケースを想定 (型の嘘を意図的に再現)
+      filePath: undefined as unknown as string,
+      tags: [],
+      folders: ['F1']
+    };
+    const { plans, summary } = buildSyncPlan(
+      baseResult({
+        folderTree: [{ id: 'F1', name: 'Folder 1', parent: null, children: [] }],
+        items: [broken, mkItem('ok', [], ['F1'])]
+      }),
+      settings({
+        categories: {
+          folders: true,
+          smartFolders: false,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
+      MANAGED,
+      'linux',
+      'en'
+    );
+    expect(plans).toHaveLength(1);
+    expect(plans[0]!.itemId).toBe('ok');
+    expect(summary.warnings.some((w) => w.includes('broken'))).toBe(true);
+  });
+
   it('all カテゴリ: フラットに配置', () => {
     const { plans } = buildSyncPlan(
       baseResult({

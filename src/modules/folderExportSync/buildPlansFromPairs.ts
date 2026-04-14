@@ -35,6 +35,15 @@ export function buildPlansFromPairs(
   let droppedCount = 0;
 
   for (const pair of pairs) {
+    // Eagle API 側で filePath を欠落させて返すアイテムがある (例: 一部の smartFolder.getItems)。
+    // 型宣言では string だが実体は undefined になりうるため、symlink 作成前にここで除外する。
+    if (typeof pair.item.filePath !== 'string' || pair.item.filePath.length === 0) {
+      droppedCount++;
+      warnings.push(
+        `アイテム ${pair.item.id} (${pair.item.name}) の filePath が取得できないため除外`
+      );
+      continue;
+    }
     const sanitizedSegments = pair.dir.map((seg) => {
       const s = sanitizeDirName(seg, replacement);
       if (s !== seg) sanitizedNames.push({ original: seg, sanitized: s });
