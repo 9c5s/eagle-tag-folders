@@ -47,7 +47,7 @@ npx vitest run -t "Windows 予約名"                 # test名で絞り込み
 - プラグインが書き込むのは `<rootDir>/<MANAGED_SUBDIR>` 配下の 4 種のみ:
   - `managedDir` = `<rootDir>/eagle-folder-export/` (本体)
   - `stagingDir` = `<rootDir>/eagle-folder-export.staging-<ts>/` (書込中)
-  - `oldDir` = `<rootDir>/eagle-folder-export.old-<ts>/` (swap 退避、**自動削除しない**)
+  - `oldDir` = `<rootDir>/eagle-folder-export.old-<ts>/` (swap 退避、**最新 1 世代のみ自動保持** — swap 成功時に過去世代を `pruneOldDirs` で削除)
   - `probeDir` = `<rootDir>/eagle-folder-export.probe-<ts>/` (symlink 可否検査)
 - `MANAGED_SUBDIR` は定数 (`src/modules/folderExportSync/constants.ts`)、**UI から変更不可**
 - Eagle ライブラリ (`eagle.library.path`) に**書き込んではいけない** (probe も既存ファイルへのリンクのみ)

@@ -138,6 +138,26 @@ describe('orchestrator E2E', () => {
       throw e;
     }
   });
+
+  it('execute 成功後に前世代の .old-* ディレクトリが削除される (1 世代のみ保持)', async () => {
+    const rootDir = path.join(tmpRoot, 'prune');
+    await fs.mkdir(rootDir);
+    await fs.mkdir(path.join(rootDir, `${MANAGED_SUBDIR}.old-1`));
+    await fs.mkdir(path.join(rootDir, `${MANAGED_SUBDIR}.old-2`));
+    const settings = { ...DEFAULT_SETTINGS, rootDir };
+    const { plans } = await buildPlan(settings);
+    try {
+      const result = await execute(plans, settings, {});
+      if (!result.success) return;
+      const entries = await fs.readdir(rootDir);
+      // 初回同期なので今回の oldDir は作られない (managed が元から無いため)
+      expect(entries.some((e) => e.startsWith(`${MANAGED_SUBDIR}.old-`))).toBe(false);
+    } catch (e) {
+      const err = e as NodeJS.ErrnoException;
+      if (err?.code === 'EPERM') return;
+      throw e;
+    }
+  });
 });
 
 describe('buildPlan カテゴリ別の挙動', () => {

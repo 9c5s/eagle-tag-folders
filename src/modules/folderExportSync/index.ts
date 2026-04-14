@@ -5,7 +5,7 @@ export {
   validatePrerequisites,
   needsConsent
 } from './orchestrator';
-export { cleanupLeftovers, cleanupOldDirs } from './cleanupLeftovers';
+export { cleanupLeftovers, cleanupOldDirs, pruneOldDirs } from './cleanupLeftovers';
 export { appendPerfLog, formatPerfRecord } from './perfLog';
 export type { PerfRecord } from './perfLog';
 export { MANAGED_SUBDIR, MARKER_FILE } from './constants';

@@ -18,6 +18,7 @@ import { assertNotReparsePoint, writeMarker, isManaged } from './marker';
 import { probeSymlinkCapability } from './probeSymlinkCapability';
 import { writeToStaging } from './writer';
 import { atomicSwap } from './swap';
+import { pruneOldDirs } from './cleanupLeftovers';
 
 /**
  * rootDir を基点に各種作業ディレクトリのパスを計算して返す。
@@ -237,6 +238,12 @@ export async function execute(
     const { oldDir } = await atomicSwap(paths);
     oldDirCreated = oldDir;
     swapSucceeded = true;
+
+    // 1 世代のみ保持する方針のため、今回の oldDir 以外の過去世代を削除する。
+    // 失敗はメインフローに影響させない (容量逼迫時は手動削除ボタンで回収可能)。
+    await pruneOldDirs(paths.rootDir, oldDirCreated).catch((err) => {
+      console.warn('pruneOldDirs failed:', err);
+    });
 
     currentStage = 'done';
     callbacks.onPhaseChange?.('done');
