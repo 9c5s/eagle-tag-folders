@@ -32,13 +32,14 @@ export function buildPlansFromPairs(
   const plans: SymlinkPlan[] = [];
   const usedNames = new Map<string, Map<string, number>>();
   let collisionCount = 0;
-  let droppedCount = 0;
+  let pathExceededCount = 0;
+  let missingFilePathCount = 0;
 
   for (const pair of pairs) {
     // Eagle API 側で filePath を欠落させて返すアイテムがある (例: 一部の smartFolder.getItems)。
     // 型宣言では string だが実体は undefined になりうるため、symlink 作成前にここで除外する。
     if (typeof pair.item.filePath !== 'string' || pair.item.filePath.length === 0) {
-      droppedCount++;
+      missingFilePathCount++;
       warnings.push(
         `アイテム ${pair.item.id} (${pair.item.name}) の filePath が取得できないため除外`
       );
@@ -60,7 +61,7 @@ export function buildPlansFromPairs(
     const extPart = dot > 0 ? sanitizedBase.slice(dot) : '';
 
     if (!fitsWithinBudget([...sanitizedSegments, sanitizedBase], budget)) {
-      droppedCount++;
+      pathExceededCount++;
       warnings.push(
         `アイテム ${pair.item.id} (${pair.item.name}) のパスが OS 上限 (${budget.maxTotal}) を超えるため除外: ${destDir}/${sanitizedBase}`
       );
@@ -94,11 +95,23 @@ export function buildPlansFromPairs(
     });
   }
 
-  if (droppedCount > 0) {
+  // unshift は逆順に積むので、表示したい順序の逆で追加する (先に path 超過、後に filePath 欠落)
+  if (missingFilePathCount > 0) {
     warnings.unshift(
-      `パス長超過により ${droppedCount} 件のアイテムを除外しました (詳細は後続の warnings 参照)`
+      `Eagle API から filePath を取得できなかったため ${missingFilePathCount} 件のアイテムを除外しました (詳細は後続の warnings 参照)`
+    );
+  }
+  if (pathExceededCount > 0) {
+    warnings.unshift(
+      `パス長超過により ${pathExceededCount} 件のアイテムを除外しました (詳細は後続の warnings 参照)`
     );
   }
 
-  return { plans, sanitizedNames, warnings, collisionCount, droppedCount };
+  return {
+    plans,
+    sanitizedNames,
+    warnings,
+    collisionCount,
+    droppedCount: pathExceededCount + missingFilePathCount
+  };
 }

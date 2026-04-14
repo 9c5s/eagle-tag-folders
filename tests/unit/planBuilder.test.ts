@@ -83,6 +83,10 @@ describe('buildSyncPlan', () => {
     expect(plans).toHaveLength(1);
     expect(plans[0]!.itemId).toBe('ok');
     expect(summary.warnings.some((w) => w.includes('broken'))).toBe(true);
+    // summary 先頭には filePath 欠落の集計行が含まれ、誤って「パス長超過」と
+    // 混同して表示されないこと
+    expect(summary.warnings[0]).toMatch(/filePath.*取得できなかった/);
+    expect(summary.warnings.some((w) => w.startsWith('パス長超過により'))).toBe(false);
   });
 
   it('all カテゴリ: フラットに配置', () => {
