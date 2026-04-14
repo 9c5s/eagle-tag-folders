@@ -43,7 +43,19 @@ export async function writeToStaging(
   callbacks: ExecutionCallbacks
 ): Promise<{ stagingDir: string; errors: SyncError[] }> {
   const errors: SyncError[] = [];
-  const ordered = interleaveByDir(plans);
+
+  // 上流の dedup を漏れた重複 plan が混入しても EEXIST を起こさないよう、
+  // (destDir, destName) で最終的に一意化する防衛コード
+  const seenDest = new Set<string>();
+  const uniquePlans: SymlinkPlan[] = [];
+  for (const p of plans) {
+    const key = `${p.destDir}\u0000${p.destName}`;
+    if (seenDest.has(key)) continue;
+    seenDest.add(key);
+    uniquePlans.push(p);
+  }
+
+  const ordered = interleaveByDir(uniquePlans);
 
   // 宛先ディレクトリを事前に一括作成する
   const uniqueDirs = new Set(ordered.map((p) => p.destDir));

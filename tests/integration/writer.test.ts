@@ -77,6 +77,26 @@ describe('writeToStaging', () => {
     }
   });
 
+  it('同じ (destDir, destName) を持つ重複 plan は 1 回だけ symlink され EEXIST にならない', async () => {
+    const paths = mkPaths(tmpRoot, Date.now());
+    await fs.mkdir(paths.stagingDir, { recursive: true });
+    // buildPlansFromPairs での dedup を漏れた重複 plan が混入したケースを想定
+    const plans: SymlinkPlan[] = [
+      { itemId: 'i1', sourcePath: sourceFile, destDir: 'a', destName: 'x.txt', displayTag: 'a' },
+      { itemId: 'i1', sourcePath: sourceFile, destDir: 'a', destName: 'x.txt', displayTag: 'a' }
+    ];
+    try {
+      const { errors } = await writeToStaging(plans, paths, DEFAULT_SETTINGS, {});
+      expect(errors).toEqual([]);
+      const target = path.join(paths.stagingDir, 'a', 'x.txt');
+      const stat = await fs.lstat(target);
+      expect(stat.isSymbolicLink()).toBe(true);
+    } catch (e: any) {
+      if (e?.code === 'EPERM') return;
+      throw e;
+    }
+  });
+
   it('onProgress が呼ばれる', async () => {
     const paths = mkPaths(tmpRoot, Date.now());
     await fs.mkdir(paths.stagingDir, { recursive: true });
