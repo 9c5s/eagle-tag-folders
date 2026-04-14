@@ -71,7 +71,16 @@ export async function writeToStaging(
     try {
       await fs.symlink(plan.sourcePath, dest, 'file');
     } catch (err) {
-      const kind = classify(err as NodeJS.ErrnoException, 'write');
+      const e = err as NodeJS.ErrnoException;
+      // EEXIST は冪等性の観点で silent skip する。上流の dedup を漏れた重複 plan
+      // (Unicode 正規化違いなどで destDir 文字列が一見別だが OS 上で同 path に
+      // 解決されるケース等) でも再同期を中断させない。
+      if (e?.code === 'EEXIST') {
+        completed++;
+        callbacks.onProgress?.(completed, total, plan.displayTag);
+        return;
+      }
+      const kind = classify(e, 'write');
       const syncErr: SyncError = {
         kind,
         phase: 'write',

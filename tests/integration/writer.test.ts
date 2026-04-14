@@ -77,6 +77,24 @@ describe('writeToStaging', () => {
     }
   });
 
+  it('既に dest path に何かが存在しても EEXIST を errors に出さず silent skip する', async () => {
+    const paths = mkPaths(tmpRoot, Date.now());
+    await fs.mkdir(path.join(paths.stagingDir, 'a'), { recursive: true });
+    // 事前に同名の symlink を置いて writer の dedup を強制的に通過させる
+    const dest = path.join(paths.stagingDir, 'a', 'x.txt');
+    try {
+      await fs.symlink(sourceFile, dest, 'file');
+    } catch (e: any) {
+      if (e?.code === 'EPERM') return;
+      throw e;
+    }
+    const plans: SymlinkPlan[] = [
+      { itemId: 'i1', sourcePath: sourceFile, destDir: 'a', destName: 'x.txt', displayTag: 'a' }
+    ];
+    const { errors } = await writeToStaging(plans, paths, DEFAULT_SETTINGS, {});
+    expect(errors).toEqual([]);
+  });
+
   it('同じ (destDir, destName) を持つ重複 plan は 1 回だけ symlink され EEXIST にならない', async () => {
     const paths = mkPaths(tmpRoot, Date.now());
     await fs.mkdir(paths.stagingDir, { recursive: true });
