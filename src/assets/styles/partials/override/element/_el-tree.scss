@@ -1,10 +1,13 @@
 @use '@styles/modules/mixins' as mixins;
 
-// el-tree (除外フォルダ/除外スマートフォルダ選択) を Eagle カラーテーマに追従させる
+// el-tree (除外フォルダ/除外スマートフォルダ選択) を Eagle カラーテーマに追従させる。
+// Element Plus は内部で --el-text-color-regular を使うため、--el-tree-text-color
+// だけでは label 色が上書きされない。ラベルと展開アイコンを明示的に primary 色に揃える。
 .el-tree {
   --el-tree-node-hover-bg-color: var(--color-bg-hover);
   --el-fill-color-blank: transparent;
   --el-tree-text-color: var(--color-text-primary);
+  --el-text-color-regular: var(--color-text-primary);
 
   background: transparent;
   color: var(--color-text-primary);
@@ -31,8 +34,13 @@
     background: var(--color-bg-selected);
   }
 
+  .el-tree-node__label {
+    color: var(--color-text-primary);
+    font-size: 13px;
+  }
+
   .el-tree-node__expand-icon {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
 
     &.is-leaf {
       color: transparent;
@@ -44,7 +52,10 @@
     background: transparent;
   }
 
-  // チェックボックスも Eagle カラーに揃える
+  // チェックボックスも Eagle カラーに揃える。label が薄いグレーにならないよう
+  // --el-checkbox-text-color もローカルで上書きする。
+  --el-checkbox-text-color: var(--color-text-primary);
+
   .el-checkbox__inner {
     background-color: transparent;
     border-color: var(--color-border-primary);
