@@ -8,7 +8,7 @@ import { MANAGED_SUBDIR } from '@/modules/folderExportSync/constants';
 let tmpRoot: string;
 
 beforeEach(async () => {
-  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tagfolders-cleanup-'));
+  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'folder-export-cleanup-'));
 });
 
 afterEach(async () => {

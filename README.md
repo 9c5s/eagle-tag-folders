@@ -1,17 +1,19 @@
-# Eagle Tag Folders
+# Eagle Folder Export
 
-Eagle ライブラリのアイテムに付与されたタグとタググループから、OS 上にディレクトリ階層を構築し、実ファイルへのシンボリックリンクを配置するプラグインです。
+Eagle ライブラリ内アイテムが属する通常フォルダ / スマートフォルダ / 仮想カテゴリ (all / untagged / uncategorized) を元に、OS 上にディレクトリ階層を構築し、実ファイルへのシンボリックリンクを配置するプラグインです。
 
 ## 機能
 
-- タグ名フォルダの自動生成
-- タググループを上位ディレクトリに展開
-- 手動フル同期 (MVP)
-- Windows (開発者モード) / macOS / Linux 対応
+- 通常フォルダ階層の再現 (`folders/`)
+- スマートフォルダ階層の再現 (`smart-folders/`)
+- 仮想カテゴリのフラット展開 (`all/` / `untagged/` / `uncategorized/`)
+- 除外フォルダ / 除外スマートフォルダの指定
+- 手動フル同期 (MVP、差分同期は将来拡張)
+- Windows (開発者モード必須) / macOS / Linux 対応
 
 ## 開発
 
-前提: Node.js 18+ と npm が開発マシンに入っていること (Eagle ランタイムは Node 16 だがビルド用は新しい Node でOK)。
+前提: Node.js 18+ と npm が開発マシンに入っていること (Eagle ランタイムは Node 16 だがビルド用は新しい Node で OK)。
 
 ```bash
 npm install
@@ -24,7 +26,7 @@ npm test           # ユニット + 統合テスト
 
 ## アーキテクチャ
 
-- `src/modules/tagFolderSync/` — ビジネスロジック (Vue 非依存、純粋 TS)
+- `src/modules/folderExportSync/` — ビジネスロジック (Vue 非依存、純粋 TS)
 - `src/components/` — Vue UI コンポーネント
 - `src/composables/` — Vue 状態管理
 - `public/manifest.json` — Eagle プラグインマニフェスト

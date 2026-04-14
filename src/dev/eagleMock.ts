@@ -3,7 +3,7 @@ export function installEagleMock(): void {
   const noop = (): void => {};
   const mock = {
     plugin: {
-      manifest: { id: 'dev', version: '0.0.0-dev', name: 'Tag Folders (dev)', logo: '/logo.png' },
+      manifest: { id: 'dev', version: '0.0.0-dev', name: 'Folder Export (dev)', logo: '/logo.png' },
       path: '/dev'
     },
     window: {

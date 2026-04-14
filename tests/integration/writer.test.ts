@@ -21,7 +21,7 @@ function mkPaths(rootDir: string, ts: number): ResolvedPaths {
 }
 
 beforeEach(async () => {
-  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tagfolders-writer-'));
+  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'folder-export-writer-'));
   sourceFile = path.join(tmpRoot, 'source.txt');
   await fs.writeFile(sourceFile, 'hello', 'utf8');
 });

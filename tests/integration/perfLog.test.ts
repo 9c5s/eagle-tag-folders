@@ -54,7 +54,7 @@ function makeRecord(overrides: Partial<PerfRecord> = {}): PerfRecord {
 }
 
 beforeEach(async () => {
-  tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'tagfolders-perflog-'));
+  tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'folder-export-perflog-'));
 });
 
 afterEach(async () => {

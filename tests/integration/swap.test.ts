@@ -19,7 +19,7 @@ function mkPaths(rootDir: string, ts: number): ResolvedPaths {
 }
 
 beforeEach(async () => {
-  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tagfolders-swap-'));
+  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'folder-export-swap-'));
 });
 
 afterEach(async () => {

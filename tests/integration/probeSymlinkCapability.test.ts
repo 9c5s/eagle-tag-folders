@@ -23,7 +23,7 @@ function mkPaths(rootDir: string, ts: number): ResolvedPaths {
 }
 
 beforeEach(async () => {
-  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tagfolders-probe-'));
+  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'folder-export-probe-'));
   existingFile = path.join(tmpRoot, 'existing-file.txt');
   await fs.writeFile(existingFile, 'x', 'utf8');
 });

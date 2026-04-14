@@ -65,7 +65,7 @@ function setupEagleMock(opts?: {
 }
 
 beforeEach(async () => {
-  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tagfolders-orch-'));
+  tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'folder-export-orch-'));
   libraryDir = path.join(tmpRoot, 'library');
   await fs.mkdir(libraryDir);
   sourceFile = path.join(libraryDir, 'src.txt');
