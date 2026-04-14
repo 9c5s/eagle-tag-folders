@@ -59,7 +59,7 @@ export function buildPlansFromPairs(
     const dot = sanitizedBase.lastIndexOf('.');
     const extPart = dot > 0 ? sanitizedBase.slice(dot) : '';
 
-    if (!fitsWithinBudget([...sanitizedSegments, sanitizedBase], extPart.length, budget)) {
+    if (!fitsWithinBudget([...sanitizedSegments, sanitizedBase], budget)) {
       droppedCount++;
       warnings.push(
         `アイテム ${pair.item.id} (${pair.item.name}) のパスが OS 上限 (${budget.maxTotal}) を超えるため除外: ${destDir}/${sanitizedBase}`

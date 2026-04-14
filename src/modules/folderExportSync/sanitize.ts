@@ -50,20 +50,18 @@ export function computePathBudget(managedDir: string, platform: Platform): PathB
     maxTotal,
     alreadyUsed,
     remaining: maxTotal - alreadyUsed,
-    suffixReserve: 16
+    // 衝突サフィックス " (NNN)" 付与時の余裕分。実測 " (999)" = 6 char で足りる
+    suffixReserve: 6
   };
 }
 
-export function fitsWithinBudget(
-  segments: string[],
-  extLength: number,
-  budget: PathBudget
-): boolean {
+// segments には拡張子込みのファイル名が最終要素として含まれる前提。
+// 二重加算を避けるため extLength を別途受け取らない。
+export function fitsWithinBudget(segments: string[], budget: PathBudget): boolean {
   const sep = 1;
   const total =
     budget.alreadyUsed +
     segments.reduce((acc, s) => acc + sep + s.length, 0) +
-    extLength +
     budget.suffixReserve;
   return total <= budget.maxTotal;
 }

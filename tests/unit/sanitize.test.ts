@@ -89,16 +89,27 @@ describe('computePathBudget', () => {
     expect(b.alreadyUsed).toBe(p.length);
     expect(b.remaining).toBe(260 - p.length);
   });
+  it('suffixReserve は衝突サフィックス " (NNN)" 用の 6 byte', () => {
+    const b = computePathBudget('/root/eagle-folder-export', 'linux');
+    expect(b.suffixReserve).toBe(6);
+  });
 });
 
 describe('fitsWithinBudget', () => {
-  it('余裕があれば true', () => {
+  it('余裕があれば true (segments に拡張子込みのファイル名が含まれる想定)', () => {
     const b = computePathBudget('/r/eagle-folder-export', 'linux');
-    expect(fitsWithinBudget(['g', 't', 'file.png'], 4, b)).toBe(true);
+    expect(fitsWithinBudget(['g', 't', 'file.png'], b)).toBe(true);
   });
   it('budget 超えると false', () => {
     const b = computePathBudget('C:\\\\root\\\\eagle-folder-export', 'win32');
     const longName = 'x'.repeat(250);
-    expect(fitsWithinBudget(['group', 'tag', longName + '.png'], 4, b)).toBe(false);
+    expect(fitsWithinBudget(['group', 'tag', longName + '.png'], b)).toBe(false);
+  });
+  it('拡張子はセグメント内の文字列に既に含まれており二重加算しない', () => {
+    // alreadyUsed = '/r/eagle-folder-export'.length = 22
+    // segments reduce = (1+5)+(1+8) = 15 (拡張子 .png は 'file.png' 内に含まれる)
+    // total = 22 + 15 + 6 (suffixReserve) = 43 <= 4096 → true
+    const b = computePathBudget('/r/eagle-folder-export', 'linux');
+    expect(fitsWithinBudget(['group', 'file.png'], b)).toBe(true);
   });
 });
