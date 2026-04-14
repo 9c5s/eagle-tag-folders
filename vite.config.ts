@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig, loadEnv, type Plugin } from 'vite';
+import { createLogger, defineConfig, loadEnv, type Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
@@ -41,8 +41,34 @@ function electronNodeBuiltins(): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const perfLogDir = env.VITE_PERF_LOG_DIR ?? '';
+
+  // Element Plus カスタムテーマが参照する Eagle 本体の runtime アセット
+  // (Roboto フォント / Eagle UI アイコン SVG) は build 時に解決できないが、
+  // Eagle プラグインとして起動すれば Eagle 側で提供される。意図どおりの未解決
+  // 警告なのでロガー側でフィルタして抑止する。
+  // 許可リスト外の警告は process.exitCode を 1 にして build を失敗扱いにし、
+  // lefthook pre-commit で検知できるようにする。
+  const logger = createLogger();
+  const shouldSuppress = (msg: unknown): boolean =>
+    typeof msg === 'string' &&
+    msg.includes("didn't resolve at build time") &&
+    (/images\/(light|dark)\//.test(msg) || msg.includes('fonts/roboto/'));
+  const defaultWarn = logger.warn.bind(logger);
+  const defaultWarnOnce = logger.warnOnce.bind(logger);
+  logger.warn = (msg, options) => {
+    if (shouldSuppress(msg)) return;
+    defaultWarn(msg, options);
+    process.exitCode = 1;
+  };
+  logger.warnOnce = (msg, options) => {
+    if (shouldSuppress(msg)) return;
+    defaultWarnOnce(msg, options);
+    process.exitCode = 1;
+  };
+
   return {
     base: './',
+    customLogger: logger,
     define: {
       __PERF_LOG_DIR__: JSON.stringify(perfLogDir)
     },
@@ -54,6 +80,17 @@ export default defineConfig(({ mode }) => {
           chunkFileNames: 'assets/js/[name]-[hash].js',
           entryFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: 'assets/[ext]/[name]-[hash][extname]'
+        },
+        // Rollup 公式推奨の warning→error 昇格パターン。
+        // Rollup パイプライン由来の警告 (missing exports, circular deps, plugin warnings 等)
+        // は handler('error', log) で即 build 失敗にする。Vite 独自 logger 経由の警告は
+        // 上の customLogger 側で process.exitCode を 1 にして網羅する。
+        onLog(level, log, handler) {
+          if (level === 'warn') {
+            handler('error', log);
+            return;
+          }
+          handler(level, log);
         }
       }
     },

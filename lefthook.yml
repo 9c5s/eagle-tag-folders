@@ -9,8 +9,8 @@ pre-commit:
       glob: "*.{ts,vue,scss,css,json,md}"
       stage_fixed: true
       run: npx prettier --write {staged_files}
-    typecheck:
-      run: npx vue-tsc --noEmit
+    build:
+      run: npm run build
     test:
       run: npx vitest run
 
