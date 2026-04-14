@@ -53,7 +53,7 @@ async function run(): Promise<void> {
   width: 100%;
 }
 .cleanup-message {
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   text-align: center;
 }

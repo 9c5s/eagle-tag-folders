@@ -1,7 +1,7 @@
 @use '@styles/modules/mixins' as mixins;
 .el-input {
   height: 24px;
-  font-size: 13px;
+  font-size: var(--font-size-base);
   .el-input__wrapper {
     --border-color: transparent;
     font-size: inherit;

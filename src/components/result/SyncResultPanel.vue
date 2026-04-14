@@ -33,7 +33,7 @@ const expanded = ref(false);
   border: 1px solid var(--color-border-primary);
   border-radius: 8px;
   background: var(--color-bg-primary);
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -44,7 +44,7 @@ const expanded = ref(false);
 .errors {
   margin: 0;
   padding-left: 18px;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
 </style>

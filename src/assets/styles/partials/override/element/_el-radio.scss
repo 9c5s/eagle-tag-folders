@@ -3,12 +3,12 @@
 .el-radio {
   --el-color-primary: var(--color-primary);
   --el-radio-text-color: var(--color-text-primary);
-  --el-radio-font-size: 13px;
+  --el-radio-font-size: var(--font-size-base);
   --el-radio-input-border-color: var(--color-border-primary);
 
   height: auto;
   margin-right: 16px;
-  font-size: 13px;
+  font-size: var(--font-size-base);
   color: var(--color-text-primary);
 
   .el-radio__input {
@@ -42,7 +42,7 @@
   }
 
   .el-radio__label {
-    font-size: 13px;
+    font-size: var(--font-size-base);
     color: var(--color-text-primary);
     padding-left: 6px;
   }

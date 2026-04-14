@@ -27,7 +27,7 @@
       line-height: inherit;
       color: var(--color-text-primary);
       padding-left: 12px;
-      font-size: 13px;
+      font-size: var(--font-size-base);
       &::placeholder {
         --color: var(--color-dark-25);
         @include mixins.dark {
@@ -88,7 +88,7 @@
           padding: 6px;
           color: var(--color-text-primary);
           display: flex;
-          font-size: 13px;
+          font-size: var(--font-size-base);
           height: 28px;
           align-items: center;
           border-radius: 6px;

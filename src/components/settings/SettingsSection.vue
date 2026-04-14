@@ -18,7 +18,7 @@ defineProps<{ title?: string }>();
   gap: 6px;
 }
 .settings-section__title {
-  font-size: 12px;
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   padding-left: 4px;

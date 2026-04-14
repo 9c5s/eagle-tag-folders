@@ -65,7 +65,7 @@ async function openFolderPicker(): Promise<void> {
 
 <style lang="scss" scoped>
 .root-dir-value {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   padding: 4px 6px;
   background: var(--color-bg-active);
@@ -85,6 +85,6 @@ async function openFolderPicker(): Promise<void> {
 }
 .root-dir-error {
   color: var(--color-negative);
-  font-size: 11px;
+  font-size: var(--font-size-xs);
 }
 </style>

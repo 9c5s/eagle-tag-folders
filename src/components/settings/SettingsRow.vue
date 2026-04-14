@@ -21,7 +21,7 @@ defineProps<{ label: string }>();
   padding: 0 0 0 4px;
 }
 .settings-row__label {
-  font-size: 13px;
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
   min-width: 60px;
   flex: 0 0 auto;

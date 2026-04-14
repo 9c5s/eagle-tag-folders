@@ -34,16 +34,16 @@ const managedPath = computed(() => `${props.rootDir}/${MANAGED_SUBDIR}`);
 <style lang="scss" scoped>
 h3 {
   margin: 0 0 8px;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   color: var(--color-text-primary);
 }
 p {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   margin: 4px 0;
   color: var(--color-text-primary);
 }
 pre {
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   background: var(--color-bg-active);
   padding: 6px 8px;
   border-radius: 4px;

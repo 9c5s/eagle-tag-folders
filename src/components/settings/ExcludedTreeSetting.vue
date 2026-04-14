@@ -90,7 +90,7 @@ watch(checked, (v) => emit('update:excludedIds', [...v]), { deep: true });
   padding: 6px 8px;
   border: 1px dashed var(--color-border-secondary);
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   &__list {
     margin: 4px 0 6px;

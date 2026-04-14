@@ -30,11 +30,11 @@ const emit = defineEmits<{
 <style lang="scss" scoped>
 h3 {
   margin: 0 0 8px;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   color: var(--color-text-primary);
 }
 p {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   margin: 4px 0;
   color: var(--color-text-primary);
   line-height: 1.6;

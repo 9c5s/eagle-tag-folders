@@ -23,7 +23,7 @@ const percent = computed(() =>
   background: var(--color-bg-primary);
   .text,
   .current {
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     margin-top: 6px;
     color: var(--color-text-primary);
   }

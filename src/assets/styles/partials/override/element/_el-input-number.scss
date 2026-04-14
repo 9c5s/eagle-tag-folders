@@ -54,7 +54,7 @@
       .el-input__inner {
         height: 30px;
         line-height: 30px;
-        font-size: 13px;
+        font-size: var(--font-size-base);
         text-align: left;
         padding-left: 10px;
         color: var(--color-text-primary);

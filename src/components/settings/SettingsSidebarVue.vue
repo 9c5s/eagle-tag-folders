@@ -111,7 +111,7 @@ const title =
   &__title {
     color: var(--color-text-primary);
     font-weight: var(--font-weight-bold);
-    font-size: 14px;
+    font-size: var(--font-size-md);
   }
 }
 .settings-content {

@@ -30,7 +30,7 @@ const { summary } = useSyncState();
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   padding: 16px;
   border: 1px solid var(--color-border-primary);
   border-radius: 8px;
@@ -40,6 +40,6 @@ const { summary } = useSyncState();
   margin-top: 8px;
   padding-left: 18px;
   color: var(--color-warning);
-  font-size: 11px;
+  font-size: var(--font-size-xs);
 }
 </style>

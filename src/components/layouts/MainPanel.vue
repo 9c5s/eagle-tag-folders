@@ -82,10 +82,10 @@ function handleForceExit() {
   color: var(--color-negative);
   h4 {
     margin: 0 0 6px;
-    font-size: 13px;
+    font-size: var(--font-size-base);
   }
   p {
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     margin: 0;
   }
 }

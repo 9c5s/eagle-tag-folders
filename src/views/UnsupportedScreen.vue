@@ -30,11 +30,11 @@ const currentBuild =
   font-family: system-ui, sans-serif;
 }
 h1 {
-  font-size: 18px;
+  font-size: var(--font-size-xl);
   font-weight: 600;
 }
 p {
-  font-size: 13px;
+  font-size: var(--font-size-base);
   line-height: 1.6;
   margin: 0;
 }

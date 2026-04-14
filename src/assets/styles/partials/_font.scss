@@ -26,6 +26,14 @@
   // 字体权重系统 - 统一字重
   --font-weight-normal: 400; // 正常字重
   --font-weight-bold: 600; // 加粗字重
+
+  // フォントサイズのプリセット (コンポーネント個別指定ではなくこのスケールを参照する)
+  --font-size-xxs: 10px; // 極小 (tippy バッジなど)
+  --font-size-xs: 11px; // 注釈・補足メッセージ
+  --font-size-sm: 12px; // 説明文・小要素
+  --font-size-base: 13px; // 本文・フォーム入力・ツリー / ラジオ / ボタン
+  --font-size-md: 14px; // セクション見出し・サイドバータイトル・ダイアログタイトル
+  --font-size-xl: 18px; // 画面レベルの見出し (Unsupported / ダイアログ大見出し)
 }
 
 // 平台特定字体权重优化

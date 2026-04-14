@@ -9,7 +9,7 @@
   height: 22px;
   line-height: 20px;
   padding: 0 8px;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   border-radius: 4px;
   background: var(--color-bg-active) !important;
   color: var(--color-text-primary) !important;
@@ -18,7 +18,7 @@
   .el-tag__close {
     width: 14px;
     height: 14px;
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     margin-left: 6px;
     color: var(--color-text-secondary);
     background: transparent;
