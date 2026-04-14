@@ -52,6 +52,48 @@ describe('buildSyncPlan', () => {
     expect(plans[0]!.destDir).toBe('folders/Folder 1');
   });
 
+  it('sanitize 後に (destDir, destName) が完全一致する plan の重複は最終的に除外される', () => {
+    // dir 文字列は別だが sanitize で末尾空白が消えて同じ destDir に解決される
+    // ような Eagle データを再現する。usedNames の衝突解決で (2) 化されるはず
+    // だが、念のため dest path レベルでも保険で重複排除されることを保証する。
+    const flatTree = [
+      { id: 'S_a', name: 'mov', parent: null, children: [] },
+      // 末尾空白付き → sanitize 後は同じ "mov" に正規化される
+      { id: 'S_b', name: 'mov ', parent: null, children: [] }
+    ];
+    const item = mkItem('shared');
+    const cache = new Map<string, EagleItem[]>([
+      ['S_a', [item]],
+      ['S_b', [item]]
+    ]);
+    const { plans } = buildSyncPlan(
+      baseResult({
+        smartFolderTree: flatTree,
+        sfItemsCache: cache
+      }),
+      settings({
+        categories: {
+          folders: false,
+          smartFolders: true,
+          all: false,
+          untagged: false,
+          uncategorized: false
+        }
+      }),
+      MANAGED,
+      'linux',
+      'en'
+    );
+    const movPlans = plans.filter((p) => p.destDir === 'smart-folders/mov');
+    // 同一 (destDir, destName) の plan は 1 つのみであることを保証 (writer の EEXIST 防止)
+    const seen = new Set<string>();
+    for (const p of movPlans) {
+      const key = `${p.destDir}/${p.destName}`;
+      expect(seen.has(key)).toBe(false);
+      seen.add(key);
+    }
+  });
+
   it('同じ item を同じ dir に置こうとする pair の重複は 1 plan に圧縮する', () => {
     // smartFolder tree が flat 化されて同名 node が複数並ぶケースを再現する。
     // ここでは独立 "mov" と "type" 配下の子 "mov" がどちらも root 直下の flat
