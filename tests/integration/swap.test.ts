@@ -26,6 +26,80 @@ afterEach(async () => {
   await fs.rm(tmpRoot, { recursive: true, force: true });
 });
 
+describe('retryOnTransientFsError', () => {
+  it('EPERM を 1 回投げても 2 回目で成功すれば結果を返す', async () => {
+    const { retryOnTransientFsError } = await import('@/modules/folderExportSync/swap');
+    let count = 0;
+    const result = await retryOnTransientFsError(
+      async () => {
+        count++;
+        if (count === 1) {
+          const err = new Error('EPERM') as NodeJS.ErrnoException;
+          err.code = 'EPERM';
+          throw err;
+        }
+        return 'ok';
+      },
+      { attempts: 3, delayMs: 1 }
+    );
+    expect(result).toBe('ok');
+    expect(count).toBe(2);
+  });
+
+  it('EBUSY もリトライ対象', async () => {
+    const { retryOnTransientFsError } = await import('@/modules/folderExportSync/swap');
+    let count = 0;
+    const result = await retryOnTransientFsError(
+      async () => {
+        count++;
+        if (count < 3) {
+          const err = new Error('EBUSY') as NodeJS.ErrnoException;
+          err.code = 'EBUSY';
+          throw err;
+        }
+        return 'ok';
+      },
+      { attempts: 5, delayMs: 1 }
+    );
+    expect(result).toBe('ok');
+    expect(count).toBe(3);
+  });
+
+  it('リトライ対象外 (ENOENT) は即 throw', async () => {
+    const { retryOnTransientFsError } = await import('@/modules/folderExportSync/swap');
+    let count = 0;
+    await expect(
+      retryOnTransientFsError(
+        async () => {
+          count++;
+          const err = new Error('ENOENT') as NodeJS.ErrnoException;
+          err.code = 'ENOENT';
+          throw err;
+        },
+        { attempts: 3, delayMs: 1 }
+      )
+    ).rejects.toThrow('ENOENT');
+    expect(count).toBe(1);
+  });
+
+  it('attempts 回数を超えたら最後のエラーを throw', async () => {
+    const { retryOnTransientFsError } = await import('@/modules/folderExportSync/swap');
+    let count = 0;
+    await expect(
+      retryOnTransientFsError(
+        async () => {
+          count++;
+          const err = new Error('EPERM') as NodeJS.ErrnoException;
+          err.code = 'EPERM';
+          throw err;
+        },
+        { attempts: 3, delayMs: 1 }
+      )
+    ).rejects.toThrow('EPERM');
+    expect(count).toBe(3);
+  });
+});
+
 describe('atomicSwap', () => {
   it('managedDir 不存在時は staging を直接 rename', async () => {
     const paths = mkPaths(tmpRoot, Date.now());
