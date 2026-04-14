@@ -23,6 +23,9 @@ body,
   background-color: var(--color-bg-primary);
   overflow: hidden;
   font-weight: var(--font-weight-normal);
+  // 未指定要素がブラウザデフォルトの 16px を継承して見出しより大きくなる
+  // 問題を防ぐため、アプリ全体のベースサイズを 13px (本文相当) に揃える
+  font-size: var(--font-size-base);
 }
 
 html {
